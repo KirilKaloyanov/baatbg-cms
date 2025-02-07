@@ -1,8 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
 import {
   Auth,
-  getAuth,
   signInWithPopup,
   GoogleAuthProvider,
   User,
@@ -14,10 +12,6 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  // constructor(private afAuth: AngularFireAuth, private userService: UserService, private router: Router) {}
-
-  user: {name: string, role?: string} | null = null;
-
   private auth: Auth = inject(Auth);
   private userService: UserService = inject(UserService);
   private router: Router = inject(Router);
@@ -27,13 +21,10 @@ export class AuthService {
       const result = await signInWithPopup(this.auth, new GoogleAuthProvider());
       if (result.user) {
         const uid = result.user.uid;
-        this.userService.getUserRole(uid).subscribe((role) => {
-          console.log(uid, role);
+        this.userService.getRole(uid).subscribe((role) => {
           if (role === 'admin') {
             this.router.navigate(['/dashboard']);
           } else {
-            // alert('Forbidden');
-            // this.logout();
             this.router.navigate(['/forbidden']);
           }
         });

@@ -26,9 +26,9 @@ interface Item {
       <ul>
         <li>{{ user$ | async }}</li>
       </ul>
-      <button *ngIf="!isUserLogged" (click)="login()">Sign in with Google</button>
-      <button *ngIf="isUserLogged" (click)="logout()">Logout</button>
-      <button *ngIf="isUserLogged" [routerLink]="'/dashboard'">Dashboard</button>
+      <button *ngIf="!isUserAuthorized" (click)="login()">Sign in with Google</button>
+      <button *ngIf="isUserAuthorized" (click)="logout()">Logout</button>
+      <button *ngIf="isUserAuthorized" [routerLink]="'/dashboard'">Dashboard</button>
     </div>
   `,
   standalone: true,
@@ -36,7 +36,7 @@ interface Item {
 })
 export class HomeComponent {
   user$!: Observable<any>;
-  isUserLogged: boolean = false;
+  isUserAuthorized: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -47,13 +47,13 @@ export class HomeComponent {
     this.user$ = this.authService.getLoggedUser$.pipe(
       switchMap((user) => {
         if (user) {
-          return this.userService.getUserRole(user.uid).pipe(
+          return this.userService.getRole(user.uid).pipe(
             switchMap((role) => {
               if (role === 'admin') {
-                this.isUserLogged = true;
+                this.isUserAuthorized = true;
                 return of(user.displayName);
               }
-              this.isUserLogged = false;
+              this.isUserAuthorized = false;
               return of('Unauthorized');
             })
           );
@@ -63,12 +63,12 @@ export class HomeComponent {
     );
   }
 
-  login() {
-    this.authService.loginWithGoogle();
+  async login() {
+    await this.authService.loginWithGoogle();
   }
 
   logout() {
-    this.isUserLogged = false;
+    this.isUserAuthorized = false;
     this.authService.logout();
   }
 }
