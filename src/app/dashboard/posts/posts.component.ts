@@ -29,8 +29,6 @@ export class PostsComponent {
     // this.items$.subscribe((i) => console.log(i));
 
     this.posts$ = this.dbService.getCollection('posts');
-    this.dbService.getDocument("posts", "boQ2ihM0QdlCHrMZasFr").subscribe((doc) => {
-        console.log(doc)
-    })
+
   }
 }

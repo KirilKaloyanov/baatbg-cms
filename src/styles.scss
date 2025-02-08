@@ -1,1 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
+a:visited {
+    color: lightgrey;
+}
+
+input {
+    display: block;
+}
+
+label {
+    display: inline-block;
+    margin-top: 8px;
+    margin-bottom: 4px;
+}
+
+body {
+    background-color: rgb(49, 49, 49);
+    color: lightgrey;
+}

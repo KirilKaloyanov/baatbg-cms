@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { collection, collectionData, Firestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { DbService } from '../../shared/services/db.service';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 
 @Component({
@@ -14,15 +14,25 @@ import { RouterModule } from '@angular/router';
 export class MenusComponent {
     menu$!: Observable<any>;
 
-  constructor(private dbService: DbService) {}
+  constructor(private dbService: DbService, private router: Router) {}
 
   ngOnInit() {
     // this.items$.subscribe((i) => console.log(i));
 
     this.menu$ = this.dbService.getCollection('menu');
-    this.menu$.subscribe((i) => console.log(i));
-    this.dbService.getDocument("posts", "boQ2ihM0QdlCHrMZasFr").subscribe((doc: any) => {
-        console.log(doc)
-    })
+    // this.menu$.subscribe((i) => console.log(i));
+    // this.dbService.getDocument("posts", "boQ2ihM0QdlCHrMZasFr").subscribe((doc: any) => {
+    //     console.log(doc)
+    // })
   }
+
+  
+addNewItem(){
+  this.router.navigate(['/dashboard/menus/edit']);
+}
+
+editItem(itemId: string) {
+  this.router.navigate(['/dashboard/menus/edit', itemId]);
+}
+
 }

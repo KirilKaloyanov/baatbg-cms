@@ -1,0 +1,23 @@
+
+<div *ngIf="menu$ | async as menu">
+
+    <h2>{{menu.id ? 'Edit menu' : 'Create new menu'}}</h2>
+
+    <form [formGroup]="menuForm" (ngSubmit)="saveMenu()">
+        <label for="menu-id">ID</label>
+        <input type="text" id="menu-id" formControlName="id"/>
+        
+        <label for="name">Name</label>
+        <input type="text" id="name" formControlName="name"/>
+        
+        <label for="path">Path</label>
+        <input type="text" id="path" formControlName="path"/>
+        
+        <label for="position">Position</label>
+        <input type="number" id="position" formControlName="position"/>
+        
+        <button type="submit" [disabled]="menuButtonDisabled">{{ !menuButtonDisabled ? "Save" : "Wait..." }}</button>
+        <button type="button" (click)="returnToParent()">Cancel</button>
+    </form>
+
+</div>

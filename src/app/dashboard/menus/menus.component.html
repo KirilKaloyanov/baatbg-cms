@@ -13,8 +13,9 @@
       <td>{{ item.name }}</td>
       <td>{{ item.path }}</td>
       <td>{{ item.position }}</td>
-      <td><a routerLink="/">Edit</a></td>
+      <td (click)="editItem(item.id)">Edit</td>
     </tr>
     }
   </tbody>
 </table>
+<button (click)="addNewItem()">Create Menu</button>
