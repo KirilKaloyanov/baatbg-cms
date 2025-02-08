@@ -63,8 +63,8 @@ export class HomeComponent {
     );
   }
 
-  async login() {
-    await this.authService.loginWithGoogle();
+  login() {
+    this.authService.loginWithGoogle();
   }
 
   logout() {

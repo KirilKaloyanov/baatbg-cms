@@ -1,0 +1,7 @@
+<div>
+    <ul>
+      @for(item of (posts$ | async); track $index) {
+      <li>{{ item.menuPath }} | {{ item.subMenuPath }}</li>
+      }
+    </ul>
+</div>

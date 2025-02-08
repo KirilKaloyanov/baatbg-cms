@@ -16,7 +16,7 @@ export class AuthService {
   private userService: UserService = inject(UserService);
   private router: Router = inject(Router);
 
-  async loginWithGoogle(): Promise<void> {
+  async loginWithGoogle() {
     try {
       const result = await signInWithPopup(this.auth, new GoogleAuthProvider());
       if (result.user) {

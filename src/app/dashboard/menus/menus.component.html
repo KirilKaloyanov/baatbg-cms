@@ -1,0 +1,20 @@
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+      <th>path</th>
+      <th>position</th>
+      <th>action</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for(item of (menu$ | async); track item.position) {
+    <tr>
+      <td>{{ item.name }}</td>
+      <td>{{ item.path }}</td>
+      <td>{{ item.position }}</td>
+      <td><a routerLink="/">Edit</a></td>
+    </tr>
+    }
+  </tbody>
+</table>
