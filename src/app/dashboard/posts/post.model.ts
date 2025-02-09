@@ -1,6 +1,7 @@
 
 export interface Post {
-    content: string;
-    menuPath: string;
-    subMenuPath: string;
+  id: string;
+  content: string;
+  menuPath: string;
+  subMenuPath: string;
   }

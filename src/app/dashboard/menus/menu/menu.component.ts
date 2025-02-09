@@ -6,22 +6,24 @@ import { CommonModule } from "@angular/common";
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'; 
 import { ToasterService } from "../../../shared/services/toaster.service";
 import { Menu } from "../menu.model";
-
+import { LoaderService } from './../../../shared/services/loader.service';
 @Component({
     selector: "edit-menu",
     templateUrl: "menu.component.html",
     imports: [ CommonModule, ReactiveFormsModule ]
 })
+
 export class MenuComponent {
       menu$!: Observable<Menu | string>;
       menuForm!: FormGroup;
-      menuButtonDisabled: boolean = false;
+      saveButtonDisabled: boolean = false;
     
       constructor(
         private dbService: DbService, 
         private route: ActivatedRoute, 
         private router: Router,
-        private toasterService: ToasterService
+        private toaster: ToasterService,
+        private loader: LoaderService
     ) {
         this.menu$ = this.route.paramMap.pipe(
             switchMap((params: ParamMap) =>{
@@ -52,21 +54,19 @@ export class MenuComponent {
     }
 
     saveMenu(){
-        this.menuButtonDisabled = true;
+        this.saveButtonDisabled = true;
         const payload = this.menuForm.value;
         this.dbService.saveDocument('menu', payload).subscribe({
             complete:() => {
-                this.toasterService.showMessage("Saved successufully")
-                setTimeout(() => {
-                    this.router.navigate(["/dashboard/menus"])
-                }, 1000)
+                this.toaster.showSuccess("Saved successufully", () => this.returnToParent())
             },
             error: (err) => {
-                this.router.navigate(['/dashboard/menus'])
-                this.toasterService.showMessage("my error" + err.message)
-            }
+                this.toaster.showError(err.message, () => {
+                this.saveButtonDisabled = false;
+            })}
         })
     }
+
     returnToParent(){
         this.router.navigate(['/dashboard/menus']);
     }

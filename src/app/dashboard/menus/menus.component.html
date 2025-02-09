@@ -5,7 +5,7 @@
       <th>name</th>
       <th>path</th>
       <th>position</th>
-      <th>action</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -15,7 +15,7 @@
       <td>{{ item.name }}</td>
       <td>{{ item.path }}</td>
       <td>{{ item.position }}</td>
-      <td (click)="editItem(item.id)">Edit</td>
+      <td><button (click)="editItem(item.id)">Edit</button></td>
     </tr>
     }
   </tbody>

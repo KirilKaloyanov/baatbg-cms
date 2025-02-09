@@ -1,7 +1,11 @@
 <div>
+    @for(item of (groupedPosts$ | async); track item[0].menuPath) {
+      <div>{{ item[0].menuPath }}</div>
     <ul>
-      @for(item of (posts$ | async); track $index) {
-      <li>{{ item.menuPath }} | {{ item.subMenuPath }}</li>
-      }
+      @for(post of (item); track post.id) {
+        <li><a [routerLink]="['/dashboard/posts/edit', post.id]"> {{ post.subMenuPath }}</a> </li>
+        }
     </ul>
+  }
+  <button (click)="addNewItem()">Create new post</button>
 </div>

@@ -10,6 +10,7 @@ import {
   collectionData,
   doc,
   docData,
+  getDoc,
 } from '@angular/fire/firestore';
 import { setDoc } from 'firebase/firestore';
 import {
@@ -20,6 +21,7 @@ import {
   map,
   Observable,
   of,
+  switchMap,
   tap,
   throwError,
 } from 'rxjs';
@@ -37,17 +39,11 @@ export class DbService {
     private injector: Injector,
     private loaderService: LoaderService
   ) {
-    // this.injector = inject(Injector)
-
-    // runInInjectionContext(this.injector, ()=> {
-    //     this.firestore = inject(Firestore);
-    // })
-
     const menuRef = collection(this.firestore, 'menu');
-    this.menus$ = collectionData(menuRef) as Observable<Menu[]>;
+    this.menus$ = collectionData(menuRef, {idField: 'id'}) as Observable<Menu[]>;
 
     const postRef = collection(this.firestore, 'posts');
-    this.posts$ = collectionData(postRef) as Observable<Post[]>;
+    this.posts$ = collectionData(postRef, {idField: 'id'}) as Observable<Post[]>;
   }
 
   getMenuCollection() {
@@ -59,20 +55,33 @@ export class DbService {
   }
 
   getOneDocument<T>(collectionName: string, docName: string) {
-    const docRef = doc(this.firestore, `${collectionName}/${docName}`);
-    // return docData(docRef, {idField: 'id'}) as Observable<T>;
-    let res = null;
-    docData(docRef).subscribe({
-      next: (value) => (res = value as T),
-      error: (err) => {
-        throw err;
-      },
-    });
-    return of(res) as Observable<T>;
+
+    try {
+      const docRef = doc(this.firestore, `${collectionName}/${docName}`);
+      return from(getDoc(docRef)).pipe(
+        map(docSnap => docSnap.exists()),
+        catchError(err => {
+          console.log(err)
+          return of(false)
+        })
+      )
+    } catch(err) {
+      console.log(err)
+      return of(false);
+    }
+
+    // docData(docRef).subscribe({
+    //   next: (value) => (res = value as T),
+    //   error: (err) => {
+    //     throw err;
+    //   },
+    // });
+    // return of(res) as Observable<T>;
   }
 
   getDocument<T>(collectionName: string, docName: string) {
     return this.runInFirebaseContext(() => {
+      console.log('db service get doc', docName)
       const docRef = doc(this.firestore, `${collectionName}/${docName}`);
       return docData(docRef, { idField: 'id' }) as Observable<T>;
     });
@@ -81,8 +90,7 @@ export class DbService {
   saveDocument(collectionName: string, payload: { id: string }) {
     return this.runInFirebaseContext(() => {
       if (!payload.id) return throwError(() => ({message: "Invalid ID"}))
-
-      const docRef = doc(this.firestore, `${collectionName}/${payload.id}`);
+        const docRef = doc(this.firestore, `${collectionName}/${payload.id}`);
       return from(setDoc(docRef, payload));
     });
   }
@@ -92,18 +100,15 @@ export class DbService {
       runInInjectionContext(this.injector, () => {
         //start loader
         this.loaderService.show();
-        console.log('start', fn);
+        console.log('FB context start', fn);
         fn()
-          .pipe(
-            tap((value) => {
-            //   console.log('end', value);
+        .pipe(
+          tap(value => {this.loaderService.hide()}),
+          catchError((err) => {
+              console.log('error');
               this.loaderService.hide();
-            }),
-            catchError((err) => {
-                // console.log('error');
-                this.loaderService.hide();
-                return throwError(() => err);
-            })
+              return throwError(() => err);
+          })
           )
           .subscribe({
             next: (value) => observer.next(value),

@@ -2,25 +2,33 @@ import { CommonModule } from "@angular/common";
 import { Component} from "@angular/core";
 import { collection, collectionData, Firestore } from '@angular/fire/firestore';
 import { DbService } from '../../shared/services/db.service';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { Post } from "./post.model";
+import { PostService } from "./post.service";
+import { Router, RouterModule } from "@angular/router";
 
 
 @Component({
     selector: "dashboard-layout",
     templateUrl: "posts.component.html",
     styleUrl: "posts.component.scss",
-    imports: [CommonModule]
+    imports: [CommonModule, RouterModule]
 })
 export class PostsComponent {
 
-  posts$!: Observable<Post[]>;
+  groupedPosts$!: Observable<Post[][]>;
 
-  constructor(private dbService: DbService) {}
+  constructor( private postService: PostService, private router: Router ) {}
 
   ngOnInit() {
-    this.posts$ = this.dbService.getPostCollection();
+    this.groupedPosts$ = this.postService.getPostsGroupByMenuId().pipe(tap((value) => console.log(value)));
 
-    
+  }
+  addNewItem(){
+    this.router.navigate(['/dashboard/posts/edit']);
+  }
+  
+  editItem(itemId: string) {
+    this.router.navigate(['/dashboard/posts/edit', itemId]);
   }
 }

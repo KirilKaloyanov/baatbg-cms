@@ -6,17 +6,16 @@ import { Observable } from 'rxjs';
 @Component({
   selector: 'app-toaster',
   template: `
-    <div *ngIf="toastMessage$ | async as message" class="toast">
-      {{ message }}
+    <div *ngIf="toastMessage$ | async as notification" class="toast" [class]="!notification.isError ? 'success' : 'failure'">
+      {{ notification.message }}
     </div>
   `,
   styles: [`
     .toast {
       position: fixed;
-      top: 50%;
+      top: 20%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: rgba(85, 43, 43, 0.46);
       color: white;
       padding: 12px 20px;
       border-radius: 5px;
@@ -24,12 +23,19 @@ import { Observable } from 'rxjs';
       opacity: 1;
       transition: opacity 0.3s ease-in-out;
     }
+    .failure {
+      background: rgba(85, 43, 43, 0.46);
+    }
+
+    .success {
+      background: rgba(43, 85, 63, 0.46);
+    }
   `],
   imports: [CommonModule]
 })
 
 export class ToasterComponent {
-    toastMessage$!: Observable<any>;
+    toastMessage$!: Observable<{message: string, isError: boolean} | null>;
     constructor(private toasterService: ToasterService) {
         this.toastMessage$ = toasterService.toastMessage$;
     }

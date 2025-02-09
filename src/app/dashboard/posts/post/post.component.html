@@ -1,0 +1,22 @@
+
+<div *ngIf="post$ | async as post">
+    <h2>{{post !== "new item" ? "Edit post" : "Create new post"}}</h2>
+
+    <form [formGroup]="postForm" (ngSubmit)="savePost()">
+        <label for="post-id">ID</label>
+        <input type="text" id="post-id" formControlName="id"/>
+        
+        <label for="menuPath">menu</label>
+        <input type="text" id="menuPath" formControlName="menuPath"/>
+        
+        <label for="subMenuPath">submenu</label>
+        <input type="text" id="subMenuPath" formControlName="subMenuPath"/>
+        
+        <label for="content">content</label>
+        <textarea id="content" formControlName="content"></textarea>
+        <br />
+        <button type="submit" [disabled]="saveButtonDisabled">{{ !saveButtonDisabled ? "Save" : "Wait..." }}</button>
+        <button type="button" (click)="returnToParent()">Cancel</button>
+    </form>
+
+</div>
