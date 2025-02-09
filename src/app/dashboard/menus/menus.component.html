@@ -1,6 +1,7 @@
 <table>
   <thead>
     <tr>
+      <th>ID</th>
       <th>name</th>
       <th>path</th>
       <th>position</th>
@@ -10,6 +11,7 @@
   <tbody>
     @for(item of (menu$ | async); track item.position) {
     <tr>
+      <td>{{ item.id }}</td>
       <td>{{ item.name }}</td>
       <td>{{ item.path }}</td>
       <td>{{ item.position }}</td>

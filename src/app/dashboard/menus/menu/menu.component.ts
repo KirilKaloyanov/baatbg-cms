@@ -13,7 +13,7 @@ import { Menu } from "../menu.model";
     imports: [ CommonModule, ReactiveFormsModule ]
 })
 export class MenuComponent {
-      menu$!: Observable<any>;
+      menu$!: Observable<Menu | string>;
       menuForm!: FormGroup;
       menuButtonDisabled: boolean = false;
     
@@ -27,7 +27,7 @@ export class MenuComponent {
             switchMap((params: ParamMap) =>{
                 const id = params.get('id');
                 if (id) {
-                    return this.dbService.getDocument("menu", id)
+                    return this.dbService.getDocument<Menu>("menu", id)
                 } 
                 return of("new item")
             })
@@ -36,7 +36,7 @@ export class MenuComponent {
         this.menuForm = this.initForm();
 
         this.menu$.subscribe((menu) => {
-            if (menu !== "new item") {
+            if (typeof menu !== "string") {
                 this.menuForm.patchValue(menu);
             }
         })
@@ -63,7 +63,7 @@ export class MenuComponent {
             },
             error: (err) => {
                 this.router.navigate(['/dashboard/menus'])
-                this.toasterService.showMessage(err.message)
+                this.toasterService.showMessage("my error" + err.message)
             }
         })
     }

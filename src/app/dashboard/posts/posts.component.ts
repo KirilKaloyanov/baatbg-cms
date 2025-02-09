@@ -3,12 +3,8 @@ import { Component} from "@angular/core";
 import { collection, collectionData, Firestore } from '@angular/fire/firestore';
 import { DbService } from '../../shared/services/db.service';
 import { Observable } from 'rxjs';
+import { Post } from "./post.model";
 
-// interface Item {
-//     avatarId: string;
-//     content: string;
-//     heartCount: number;
-//   }
 
 @Component({
     selector: "dashboard-layout",
@@ -17,18 +13,14 @@ import { Observable } from 'rxjs';
     imports: [CommonModule]
 })
 export class PostsComponent {
-// firestore: Firestore = inject(Firestore);
-  // myColl: any = collection(this.firestore, 'tweets'); //BszSjkFm3sItACBeneX3
-  // items$ = collectionData<Item>(this.myColl);
 
-  posts$!: Observable<any>;
+  posts$!: Observable<Post[]>;
 
   constructor(private dbService: DbService) {}
 
   ngOnInit() {
-    // this.items$.subscribe((i) => console.log(i));
+    this.posts$ = this.dbService.getPostCollection();
 
-    this.posts$ = this.dbService.getCollection('posts');
-
+    
   }
 }

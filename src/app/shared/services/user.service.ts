@@ -8,9 +8,9 @@ export class UserService {
     constructor(private dbService: DbService) {}
 
     getRole(uid: string): Observable<string | null> {
-        return this.dbService.getDocument('admins', uid)
+        return this.dbService.getDocument<string | null>('admins', uid)
             .pipe(
                 map((user: any) => (user ? user.role : null))
             )
-    }
+         }
 }

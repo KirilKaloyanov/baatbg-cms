@@ -4,6 +4,7 @@ import { collection, collectionData, Firestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { DbService } from '../../shared/services/db.service';
 import { Router, RouterModule } from '@angular/router';
+import { Menu } from './menu.model';
 
 
 @Component({
@@ -12,18 +13,12 @@ import { Router, RouterModule } from '@angular/router';
   imports: [CommonModule, RouterModule],
 })
 export class MenusComponent {
-    menu$!: Observable<any>;
+    menu$!: Observable<Menu[]>;
 
   constructor(private dbService: DbService, private router: Router) {}
 
   ngOnInit() {
-    // this.items$.subscribe((i) => console.log(i));
-
-    this.menu$ = this.dbService.getCollection('menu');
-    // this.menu$.subscribe((i) => console.log(i));
-    // this.dbService.getDocument("posts", "boQ2ihM0QdlCHrMZasFr").subscribe((doc: any) => {
-    //     console.log(doc)
-    // })
+    this.menu$ = this.dbService.getMenuCollection();
   }
 
   

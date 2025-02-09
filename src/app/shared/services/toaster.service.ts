@@ -10,7 +10,7 @@ export class ToasterService {
     toastMessage$ = this.toastMessageSubject.asObservable();
 
 
-    showMessage(message: string | null, duration: number = 5000) {
+    showMessage(message: string | null, duration: number = 1500) {
         this.toastMessageSubject.next( message );
 
         setTimeout(() => {
