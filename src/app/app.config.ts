@@ -3,6 +3,7 @@ import { provideRouter } from '@angular/router';
 import { initializeApp, provideFirebaseApp} from '@angular/fire/app';
 import { provideFirestore, getFirestore } from "@angular/fire/firestore";
 import { provideAuth, getAuth } from '@angular/fire/auth';
+import { provideQuillConfig } from "ngx-quill/config";
 
 import { routes } from './app.routes';
 import { environment } from '../environments/environment.development';
@@ -18,6 +19,13 @@ export const appConfig: ApplicationConfig = {
       initializeApp(environment.firebaseConfig)
     ),
     provideFirestore(() => getFirestore()),
-    provideAuth(() => getAuth())
+    provideAuth(() => getAuth()),
+    provideQuillConfig({
+      modules: {
+        toolbar: true,
+      },
+      placeholder: 'Compose an epic...',
+      theme: 'snow'
+    })
   ]
 };

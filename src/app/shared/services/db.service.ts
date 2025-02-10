@@ -55,28 +55,15 @@ export class DbService {
   }
 
   getOneDocument<T>(collectionName: string, docName: string) {
-
-    try {
-      const docRef = doc(this.firestore, `${collectionName}/${docName}`);
-      return from(getDoc(docRef)).pipe(
-        map(docSnap => docSnap.exists()),
-        catchError(err => {
-          console.log(err)
-          return of(false)
-        })
-      )
-    } catch(err) {
-      console.log(err)
-      return of(false);
-    }
-
-    // docData(docRef).subscribe({
-    //   next: (value) => (res = value as T),
-    //   error: (err) => {
-    //     throw err;
-    //   },
-    // });
-    // return of(res) as Observable<T>;
+    return this.runInFirebaseContext(() => {
+        const docRef = doc(this.firestore, `${collectionName}/${docName}`);
+        return from(getDoc(docRef)).pipe(
+          switchMap(docSnap => {
+            if (!docSnap.exists()) return throwError(() => "Document not found in the database")
+            return of(docSnap.data()) as Observable<T>;
+          })
+        )
+    })
   }
 
   getDocument<T>(collectionName: string, docName: string) {
@@ -100,13 +87,17 @@ export class DbService {
       runInInjectionContext(this.injector, () => {
         //start loader
         this.loaderService.show();
+        
         console.log('FB context start', fn);
+
         fn()
         .pipe(
           tap(value => {this.loaderService.hide()}),
-          catchError((err) => {
-              console.log('error');
+          catchError((err, caught) => {
+              console.log('error', err);
+              console.log('caught', caught);
               this.loaderService.hide();
+              // observer.error(err)
               return throwError(() => err);
           })
           )

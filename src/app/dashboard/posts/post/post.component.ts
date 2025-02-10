@@ -1,21 +1,28 @@
 import { Component } from "@angular/core";
 import { DbService } from "../../../shared/services/db.service";
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
-import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
+import { catchError, Observable, of, switchMap, throwError, map, tap } from 'rxjs';
 import { Post } from './../post.model';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { ToasterService } from "../../../shared/services/toaster.service";
-import { LoaderService } from "../../../shared/services/loader.service";
 import { CommonModule } from "@angular/common";
+import { TextEditorComponent } from "../../../shared/components/editor.component";
 
 @Component({
     selector: 'edit-post',
     templateUrl: "post.component.html",
-    imports: [ CommonModule, ReactiveFormsModule ]
+    imports: [ CommonModule, ReactiveFormsModule, TextEditorComponent ]
 })
 export class PostComponent {
 
-    postForm!: FormGroup;
+    postForm: FormGroup = 
+    new FormGroup({
+        id: new FormControl('', Validators.required),
+        content: new FormControl('', Validators.required),
+        menuPath: new FormControl('', Validators.required),
+        subMenuPath: new FormControl('', Validators.required)
+    });
+
     post$!: Observable<Post | string>;
     saveButtonDisabled: boolean = false;
 
@@ -24,44 +31,44 @@ export class PostComponent {
         private router: Router,
         private route: ActivatedRoute,
         private toaster: ToasterService,
-        private loader: LoaderService
     ) {
         this.post$ = this.route.paramMap.pipe(
             switchMap((params: ParamMap) => {
                 const id = params.get('id');
                 console.log('postComponent switchMap', id)
                 if (id) {
-                    return this.dbService.getDocument<Post>('posts', id)
+                    return this.dbService.getOneDocument<Post>('posts', id)
                 } else {
                     return of('new item')
                 }
-            }),
-            catchError((err) => {
-                return throwError(() => err)
             })
         )
-
-        this.postForm = this.initForm();
-
+    }
+    
+    ngAfterViewInit(){
         this.post$.subscribe({
-
             next: (post) => {
                 if (typeof post !== 'string') {
                     this.postForm.patchValue(post)
                 }
             },
-            error: err => console.log(err)
+            error: err => {
+                this.toaster.showError(err, () => {
+                    this.saveButtonDisabled = false;
+                })
+                this.returnToParent()
+            }
         })
     }
 
-    initForm() {
-        return new FormGroup({
-            id: new FormControl('', Validators.required),
-            content: new FormControl('', Validators.required),
-            menuPath: new FormControl('', Validators.required),
-            subMenuPath: new FormControl('', Validators.required)
-        })
-    }
+    // initForm() {
+    //     return new FormGroup({
+    //         id: new FormControl('', Validators.required),
+    //         content: new FormControl('', Validators.required),
+    //         menuPath: new FormControl('', Validators.required),
+    //         subMenuPath: new FormControl('', Validators.required)
+    //     })
+    // }
 
     savePost() {
         this.saveButtonDisabled = true;
@@ -73,8 +80,7 @@ export class PostComponent {
             error: (err) => {
                 this.toaster.showError(err.message, () => {
                     this.saveButtonDisabled = false;
-                }
-            )
+                })
             }
         })
     }
