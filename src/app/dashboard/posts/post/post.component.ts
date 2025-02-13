@@ -28,7 +28,7 @@ import { TextEditorComponent } from '../../../shared/components/editor.component
   imports: [CommonModule, ReactiveFormsModule, TextEditorComponent],
 })
 export class PostComponent {
-  post$!: Observable<Post | null>;
+  post$!: Observable<Post | string>;
   saveButtonDisabled: boolean = false;
   isCreate!: boolean;
 
@@ -57,7 +57,7 @@ export class PostComponent {
         if (id) {
           return this.dbService.getIfDocument<Post>('posts', id);
         }
-        return of(null);
+        return of("create new post");
       })
     );
   }
@@ -71,7 +71,7 @@ export class PostComponent {
   ngAfterViewChecked() {
     this.post$.subscribe({
       next: (post) => {
-        if (post) {
+        if (typeof post !== 'string') {
           this.postForm.patchValue(post);
         }
       },

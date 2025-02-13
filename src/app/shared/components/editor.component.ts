@@ -1,9 +1,11 @@
 import {
   AfterViewInit,
   Component,
+  ElementRef,
   forwardRef,
   Input,
   OnDestroy,
+  ViewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import Quill from 'quill';
@@ -20,11 +22,17 @@ import Quill from 'quill';
   ],
 })
 export class TextEditorComponent
-  implements AfterViewInit, ControlValueAccessor
-{
+  implements AfterViewInit, ControlValueAccessor {
+
   ngAfterViewInit(): void {
-    this.initQuilEditor();
+    if (this.editorContainer) {
+      this.initQuilEditor();
+    } else {
+      console.log('Editor container not found')
+    }
   }
+
+  @ViewChild("editorContainer") editorContainer!: ElementRef;
 
   private quill!: Quill;
 
@@ -34,8 +42,8 @@ export class TextEditorComponent
   private isDisabled: boolean = false;
 
   private initQuilEditor() {
-    setTimeout(() => {
-      this.quill = new Quill(('#editor'), {
+    // setTimeout(() => {
+      this.quill = new Quill(this.editorContainer.nativeElement, {
         modules: {
           toolbar: [
             ['bold', 'italic', 'underline'],
@@ -56,7 +64,7 @@ export class TextEditorComponent
       this.quill.root.addEventListener('blur', () => {
         this.onTouched();
       });
-    }, 0)
+    // }, 0)
 
   }
 
