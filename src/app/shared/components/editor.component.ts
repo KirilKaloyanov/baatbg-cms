@@ -22,17 +22,17 @@ import Quill from 'quill';
   ],
 })
 export class TextEditorComponent
-  implements AfterViewInit, ControlValueAccessor {
-
+  implements AfterViewInit, ControlValueAccessor
+{
   ngAfterViewInit(): void {
     if (this.editorContainer) {
       this.initQuilEditor();
     } else {
-      console.log('Editor container not found')
+      console.log('Editor container not found');
     }
   }
 
-  @ViewChild("editorContainer") editorContainer!: ElementRef;
+  @ViewChild('editorContainer') editorContainer!: ElementRef;
 
   private quill!: Quill;
 
@@ -43,29 +43,28 @@ export class TextEditorComponent
 
   private initQuilEditor() {
     // setTimeout(() => {
-      this.quill = new Quill(this.editorContainer.nativeElement, {
-        modules: {
-          toolbar: [
-            ['bold', 'italic', 'underline'],
-            [{ list: 'ordered' }, { list: 'bullet' }],
-            ['link'],
-            ['clean'],
-          ],
-        },
-        theme: 'snow',
-      });
-  
-      this.quill.on('text-change', () => {
-        const value = this.quill.getSemanticHTML();
-        const cleanValue = value.replace(/&nbsp;/g, " ");
-        this.onChange(cleanValue);
-      });
-  
-      this.quill.root.addEventListener('blur', () => {
-        this.onTouched();
-      });
-    // }, 0)
+    this.quill = new Quill(this.editorContainer.nativeElement, {
+      modules: {
+        toolbar: [
+          ['bold', 'italic', 'underline'],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          ['link'],
+          ['clean'],
+        ],
+      },
+      theme: 'snow',
+    });
 
+    this.quill.on('text-change', () => {
+      const value = this.quill.getSemanticHTML();
+      const cleanValue = value.replace(/&nbsp;/g, ' ');
+      this.onChange(cleanValue);
+    });
+
+    this.quill.root.addEventListener('blur', () => {
+      this.onTouched();
+    });
+    // }, 0)
   }
 
   // ControlValueAccessor methods

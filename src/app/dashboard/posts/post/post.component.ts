@@ -55,7 +55,13 @@ export class PostComponent {
       switchMap((params: ParamMap) => {
         const id = params.get('id');
         if (id) {
-          return this.dbService.getIfDocument<Post>('posts', id);
+          return this.dbService.getIfDocument<Post>('posts', id).pipe(
+            tap((post) =>{
+              if (post) {
+                this.postForm.patchValue(post);
+              }
+            })
+          );
         }
         return of("create new post");
       })
@@ -70,11 +76,7 @@ export class PostComponent {
 
   ngAfterViewInit() {
     this.post$.subscribe({
-      next: (post) => {
-        if (typeof post !== 'string') {
-          this.postForm.patchValue(post);
-        }
-      },
+      next: (post) => {},
       error: (err) => {
         this.toaster.showError(err, () => {
           this.saveButtonDisabled = false;
