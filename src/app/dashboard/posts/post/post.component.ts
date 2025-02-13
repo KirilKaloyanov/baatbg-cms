@@ -72,6 +72,15 @@ export class PostComponent {
     if (!this.isCreate) {
       this.postForm.get('id')?.disable();
     }
+    this.post$.subscribe({
+      next: (post) => {},
+      error: (err) => {
+        this.toaster.showError(err, () => {
+          this.saveButtonDisabled = false;
+        });
+        this.returnToParent();
+      },
+    });
   }
 
   ngAfterViewInit() {
