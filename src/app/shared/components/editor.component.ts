@@ -34,27 +34,30 @@ export class TextEditorComponent
   private isDisabled: boolean = false;
 
   private initQuilEditor() {
-    this.quill = new Quill('#editor', {
-      modules: {
-        toolbar: [
-          ['bold', 'italic', 'underline'],
-          [{ list: 'ordered' }, { list: 'bullet' }],
-          ['link'],
-          ['clean'],
-        ],
-      },
-      theme: 'snow',
-    });
+    setTimeout(() => {
+      this.quill = new Quill(('#editor'), {
+        modules: {
+          toolbar: [
+            ['bold', 'italic', 'underline'],
+            [{ list: 'ordered' }, { list: 'bullet' }],
+            ['link'],
+            ['clean'],
+          ],
+        },
+        theme: 'snow',
+      });
+  
+      this.quill.on('text-change', () => {
+        const value = this.quill.getSemanticHTML();
+        const cleanValue = value.replace(/&nbsp;/g, " ");
+        this.onChange(cleanValue);
+      });
+  
+      this.quill.root.addEventListener('blur', () => {
+        this.onTouched();
+      });
+    }, 0)
 
-    this.quill.on('text-change', () => {
-      const value = this.quill.getSemanticHTML();
-      const cleanValue = value.replace(/&nbsp;/g, " ");
-      this.onChange(cleanValue);
-    });
-
-    this.quill.root.addEventListener('blur', () => {
-      this.onTouched();
-    });
   }
 
   // ControlValueAccessor methods

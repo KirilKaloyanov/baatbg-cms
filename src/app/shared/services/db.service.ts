@@ -93,7 +93,7 @@ export class DbService {
   runInFirebaseContext<T>(fn: () => Observable<T>): Observable<T> {
     return new Observable((observer) => {
       runInInjectionContext(this.injector, () => {
-        this.loaderService.show();
+        // this.loaderService.show();
 
         // console.log('FB context start', fn);
 

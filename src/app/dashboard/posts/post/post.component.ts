@@ -68,7 +68,7 @@ export class PostComponent {
     }
   }
 
-  ngAfterViewInit() {
+  ngAfterViewChecked() {
     this.post$.subscribe({
       next: (post) => {
         if (post) {
