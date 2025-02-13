@@ -6,14 +6,14 @@ import {
   User,
   user,
 } from '@angular/fire/auth';
-import { UserService } from './user.service';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { map, Observable, of, switchMap } from 'rxjs';
+import { DbService } from './db.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private auth: Auth = inject(Auth);
-  private userService: UserService = inject(UserService);
+  private dbService: DbService = inject(DbService);
   private router: Router = inject(Router);
 
   async loginWithGoogle() {
@@ -21,10 +21,8 @@ export class AuthService {
       const result = await signInWithPopup(this.auth, new GoogleAuthProvider());
       if (result.user) {
         const uid = result.user.uid;
-        this.userService.getRole(uid).subscribe((role) => {
-          if (role === 'admin') {
-            this.router.navigate(['/dashboard']);
-          } else {
+        this.isUserAdmin(uid).subscribe((isAdmin) => {
+          if (!isAdmin) {
             this.router.navigate(['/forbidden']);
           }
         });
@@ -35,6 +33,20 @@ export class AuthService {
   }
 
   getLoggedUser$: Observable<User | null> = user(this.auth);
+
+  isUserAdmin$: Observable<boolean> = this.getLoggedUser$.pipe(
+    switchMap((user: User | null) => {
+      if (user) return this.isUserAdmin(user.uid)
+      return of(false) as Observable<boolean>;
+    })
+  )
+
+  isUserAdmin(uid: string): Observable<boolean> {
+    return this.dbService.getDocument<string | null>('admins', uid)
+              .pipe(
+                  map((user: any) => !!user) 
+              )
+  }
 
   async logout() {
     await this.auth.signOut();

@@ -40,10 +40,14 @@ export class DbService {
     private loaderService: LoaderService
   ) {
     const menuRef = collection(this.firestore, 'menu');
-    this.menus$ = collectionData(menuRef, {idField: 'id'}) as Observable<Menu[]>;
+    this.menus$ = collectionData(menuRef, { idField: 'id' }) as Observable<
+      Menu[]
+    >;
 
     const postRef = collection(this.firestore, 'posts');
-    this.posts$ = collectionData(postRef, {idField: 'id'}) as Observable<Post[]>;
+    this.posts$ = collectionData(postRef, { idField: 'id' }) as Observable<
+      Post[]
+    >;
   }
 
   getMenuCollection() {
@@ -54,30 +58,34 @@ export class DbService {
     return this.posts$;
   }
 
-  getOneDocument<T>(collectionName: string, docName: string) {
+  getIfDocument<T>(collectionName: string, docName: string) {
     return this.runInFirebaseContext(() => {
-        const docRef = doc(this.firestore, `${collectionName}/${docName}`);
-        return from(getDoc(docRef)).pipe(
-          switchMap(docSnap => {
-            if (!docSnap.exists()) return throwError(() => "Document not found in the database")
-            return of(docSnap.data()) as Observable<T>;
-          })
-        )
-    })
+      const docRef = doc(this.firestore, `${collectionName}/${docName}`);
+      return from(getDoc(docRef)).pipe(
+        switchMap((docSnap) => {
+          console.log(docSnap)
+          if (!docSnap.exists())
+            return throwError(() => 'Document not found in the database');
+          return of({id: docSnap.id, ...docSnap.data()}) as Observable<T>;
+        })
+      );
+    });
   }
 
   getDocument<T>(collectionName: string, docName: string) {
     return this.runInFirebaseContext(() => {
-      console.log('db service get doc', docName)
+      console.log('db service get doc', docName);
       const docRef = doc(this.firestore, `${collectionName}/${docName}`);
       return docData(docRef, { idField: 'id' }) as Observable<T>;
     });
   }
 
-  saveDocument(collectionName: string, payload: { id: string }) {
+  saveDocument(collectionName: string, id: string, payload: {}) {
+    
     return this.runInFirebaseContext(() => {
-      if (!payload.id) return throwError(() => ({message: "Invalid ID"}))
-        const docRef = doc(this.firestore, `${collectionName}/${payload.id}`);
+      if (!id) return throwError(() => ({ message: 'Invalid ID' }));
+      console.log(id);
+      const docRef = doc(this.firestore, `${collectionName}/${id}`);
       return from(setDoc(docRef, payload));
     });
   }
@@ -85,21 +93,19 @@ export class DbService {
   runInFirebaseContext<T>(fn: () => Observable<T>): Observable<T> {
     return new Observable((observer) => {
       runInInjectionContext(this.injector, () => {
-        //start loader
         this.loaderService.show();
-        
-        console.log('FB context start', fn);
+
+        // console.log('FB context start', fn);
 
         fn()
-        .pipe(
-          tap(value => {this.loaderService.hide()}),
-          catchError((err, caught) => {
+          .pipe(
+            tap((value) => this.loaderService.hide()),
+            catchError((err, caught) => {
               console.log('error', err);
               console.log('caught', caught);
               this.loaderService.hide();
-              // observer.error(err)
               return throwError(() => err);
-          })
+            })
           )
           .subscribe({
             next: (value) => observer.next(value),

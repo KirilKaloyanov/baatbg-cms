@@ -25,7 +25,8 @@ export const appConfig: ApplicationConfig = {
         toolbar: true,
       },
       placeholder: 'Compose an epic...',
-      theme: 'snow'
+      theme: 'snow',
+      sanitize: true
     })
   ]
 };

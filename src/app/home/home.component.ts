@@ -1,17 +1,7 @@
 import { Component } from '@angular/core';
-import { AsyncPipe, NgIf } from '@angular/common';
-import { inject, Injectable } from '@angular/core';
-import { Firestore, collection, collectionData } from '@angular/fire/firestore';
-import {
-  getAuth,
-  signInWithPopup,
-  GoogleAuthProvider,
-  Auth,
-} from '@angular/fire/auth';
+import { CommonModule } from '@angular/common';
 import { AuthService } from '../shared/services/auth.service';
-import { Observable, of, startWith, switchMap } from 'rxjs';
-import { UserService } from './../shared/services/user.service';
-import { RouterLink, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 interface Item {
   avatarId: string;
@@ -24,43 +14,32 @@ interface Item {
   template: `
     <div>
       <ul>
-        <li>{{ user$ | async }}</li>
+        <li *ngIf="user">
+          {{user}}<span *ngIf="isAuthorized">, Welcome!</span><span *ngIf="!isAuthorized">, you are not authorized! </span>
+        </li>
+        <li *ngIf="!user">You are not logged in.</li>
       </ul>
-      <button *ngIf="!isUserAuthorized" (click)="login()">Sign in with Google</button>
-      <button *ngIf="isUserAuthorized" (click)="logout()">Logout</button>
-      <button *ngIf="isUserAuthorized" [routerLink]="'/dashboard'">Dashboard</button>
+      <button *ngIf="!user" (click)="login()">Sign in with Google</button>
+      <button *ngIf="user" (click)="logout()">Logout</button>
+      <button *ngIf="isAuthorized" [routerLink]="'/dashboard'">Dashboard</button>
     </div>
   `,
   standalone: true,
-  imports: [AsyncPipe, NgIf, RouterModule],
+  imports: [CommonModule, RouterModule],
 })
 export class HomeComponent {
-  user$!: Observable<any>;
-  isUserAuthorized: boolean = false;
+  user!: string | null;
+  isAuthorized: boolean = false;
 
-  constructor(
-    private authService: AuthService,
-    private userService: UserService
-  ) {}
+  constructor(private authService: AuthService) {}
 
   ngOnInit() {
-    this.user$ = this.authService.getLoggedUser$.pipe(
-      switchMap((user) => {
-        if (user) {
-          return this.userService.getRole(user.uid).pipe(
-            switchMap((role) => {
-              if (role === 'admin') {
-                this.isUserAuthorized = true;
-                return of(user.displayName);
-              }
-              this.isUserAuthorized = false;
-              return of('Unauthorized');
-            })
-          );
-        }
-        return of('You are not logged in!');
-      })
-    );
+    this.authService.getLoggedUser$.subscribe((user) => {
+      this.user = user ? user.displayName : null;
+    })
+    this.authService.isUserAdmin$.subscribe(isAdmin => {
+      this.isAuthorized = isAdmin;
+    })
   }
 
   login() {
@@ -68,7 +47,7 @@ export class HomeComponent {
   }
 
   logout() {
-    this.isUserAuthorized = false;
+    this.isAuthorized = false;
     this.authService.logout();
   }
 }

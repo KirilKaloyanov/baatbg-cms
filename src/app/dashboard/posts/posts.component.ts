@@ -25,7 +25,7 @@ export class PostsComponent {
 
   }
   addNewItem(){
-    this.router.navigate(['/dashboard/posts/edit']);
+    this.router.navigate(['/dashboard/posts/create']);
   }
   
   editItem(itemId: string) {

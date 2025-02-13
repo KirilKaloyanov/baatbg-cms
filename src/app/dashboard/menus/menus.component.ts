@@ -23,7 +23,7 @@ export class MenusComponent {
 
   
 addNewItem(){
-  this.router.navigate(['/dashboard/menus/edit']);
+  this.router.navigate(['/dashboard/menus/create']);
 }
 
 editItem(itemId: string) {

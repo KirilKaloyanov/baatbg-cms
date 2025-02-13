@@ -1,6 +1,6 @@
 
 <div *ngIf="post$ | async as post">
-    <h2>{{post !== "new item" ? "Edit post" : "Create new post"}}</h2>
+    <h2>{{!isCreate ? "Edit post" : "Create new post"}}</h2>
 
     <form [formGroup]="postForm" (ngSubmit)="savePost()">
         <label for="post-id">ID</label>

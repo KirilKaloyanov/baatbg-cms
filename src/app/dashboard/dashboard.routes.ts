@@ -12,11 +12,11 @@ export const routes: Routes = [
         component: DashboardLayoutComponent,
         children: [
             { path: 'menus', component: MenusComponent },
-            { path: 'menus/edit/:id', component: MenuComponent },
-            { path: 'menus/edit', component: MenuComponent },
+            { path: 'menus/edit/:id', component: MenuComponent, data: {isCreate: false} },
+            { path: 'menus/create', component: MenuComponent, data: {isCreate: true} },
             { path: 'posts', component: PostsComponent },
-            { path: 'posts/edit/:id', component: PostComponent },
-            { path: 'posts/edit', component: PostComponent },
+            { path: 'posts/edit/:id', component: PostComponent, data: {isCreate: false} },
+            { path: 'posts/create', component: PostComponent, data: {isCreate: true} },
             { path: 'members', component: MemberComponent },
             { path: '', redirectTo: '/dashboard/posts', pathMatch: 'full' },
         ]

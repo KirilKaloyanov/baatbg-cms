@@ -12,6 +12,7 @@ import { Observable } from 'rxjs';
   `,
   styles: [`
     .toast {
+      font-size: 2rem;
       position: fixed;
       top: 20%;
       left: 50%;
@@ -24,11 +25,11 @@ import { Observable } from 'rxjs';
       transition: opacity 0.3s ease-in-out;
     }
     .failure {
-      background: rgba(85, 43, 43, 0.46);
+      background: rgba(85, 43, 43, 0.68);
     }
 
     .success {
-      background: rgba(43, 85, 63, 0.46);
+      background: rgba(43, 85, 63, 0.65);
     }
   `],
   imports: [CommonModule]
