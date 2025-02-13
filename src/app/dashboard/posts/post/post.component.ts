@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { DbService } from '../../../shared/services/db.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import {
@@ -28,6 +28,8 @@ import { TextEditorComponent } from '../../../shared/components/editor.component
   imports: [CommonModule, ReactiveFormsModule, TextEditorComponent],
 })
 export class PostComponent {
+
+  @ViewChild(TextEditorComponent) textEditor!: TextEditorComponent;
   post$!: Observable<Post | string>;
   saveButtonDisabled: boolean = false;
   isCreate!: boolean;
@@ -59,6 +61,9 @@ export class PostComponent {
             tap((post) =>{
               if (post) {
                 this.postForm.patchValue(post);
+                if(this.textEditor) {
+                  this.textEditor.initQuilEditor();
+                }
               }
             })
           );
@@ -72,18 +77,6 @@ export class PostComponent {
     if (!this.isCreate) {
       this.postForm.get('id')?.disable();
     }
-    // this.post$.subscribe({
-    //   next: (post) => {},
-    //   error: (err) => {
-    //     this.toaster.showError(err, () => {
-    //       this.saveButtonDisabled = false;
-    //     });
-    //     this.returnToParent();
-    //   },
-    // });
-  }
-
-  ngAfterViewInit() {
     this.post$.subscribe({
       next: (post) => {},
       error: (err) => {
@@ -94,6 +87,18 @@ export class PostComponent {
       },
     });
   }
+
+  // ngAfterViewInit() {
+  //   this.post$.subscribe({
+  //     next: (post) => {},
+  //     error: (err) => {
+  //       this.toaster.showError(err, () => {
+  //         this.saveButtonDisabled = false;
+  //       });
+  //       this.returnToParent();
+  //     },
+  //   });
+  // }
 
   savePost() {
     const payload = {

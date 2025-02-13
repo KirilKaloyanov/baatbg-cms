@@ -41,7 +41,7 @@ export class TextEditorComponent
 
   private isDisabled: boolean = false;
 
-  private initQuilEditor() {
+  public initQuilEditor() {
     setTimeout(() => {
     this.quill = new Quill(this.editorContainer.nativeElement, {
       modules: {
