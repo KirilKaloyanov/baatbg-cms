@@ -68,7 +68,7 @@ export class PostComponent {
     }
   }
 
-  ngAfterViewChecked() {
+  ngAfterViewInit() {
     this.post$.subscribe({
       next: (post) => {
         if (typeof post !== 'string') {
