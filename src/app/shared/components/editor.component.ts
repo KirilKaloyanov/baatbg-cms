@@ -42,7 +42,7 @@ export class TextEditorComponent
   private isDisabled: boolean = false;
 
   private initQuilEditor() {
-    // setTimeout(() => {
+    setTimeout(() => {
     this.quill = new Quill(this.editorContainer.nativeElement, {
       modules: {
         toolbar: [
@@ -64,7 +64,7 @@ export class TextEditorComponent
     this.quill.root.addEventListener('blur', () => {
       this.onTouched();
     });
-    // }, 0)
+    }, 0)
   }
 
   // ControlValueAccessor methods
