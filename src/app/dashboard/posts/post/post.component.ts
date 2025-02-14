@@ -62,6 +62,7 @@ export class PostComponent {
               if (post) {
                 this.postForm.patchValue(post);
                 if(this.textEditor) {
+                  console.log('observable with post completes')
                   this.textEditor.initQuilEditor();
                 }
               }
