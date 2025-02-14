@@ -1,5 +1,5 @@
 
-<div *ngIf="post$ | async as post">
+<!-- <div *ngIf="post$ | async as post"> -->
     <h2>{{!isCreate ? "Edit post" : "Create new post"}}</h2>
 
     <form [formGroup]="postForm" (ngSubmit)="savePost()">
@@ -19,4 +19,4 @@
         <button type="button" (click)="returnToParent()">Cancel</button>
     </form>
 
-</div>
+<!-- </div> -->
