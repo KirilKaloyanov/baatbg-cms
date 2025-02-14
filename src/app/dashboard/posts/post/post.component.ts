@@ -98,15 +98,15 @@ export class PostComponent {
 
   ngAfterViewInit() {
     console.log('ngAfterviewInit', this.textEditor)
-  //   this.post$.subscribe({
-  //     next: (post) => {},
-  //     error: (err) => {
-  //       this.toaster.showError(err, () => {
-  //         this.saveButtonDisabled = false;
-  //       });
-  //       this.returnToParent();
-  //     },
-  //   });
+    this.post$.subscribe({
+      next: (post) => {},
+      error: (err) => {
+        this.toaster.showError(err, () => {
+          this.saveButtonDisabled = false;
+        });
+        this.returnToParent();
+      },
+    });
   }
 
   savePost() {

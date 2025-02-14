@@ -25,18 +25,15 @@ export class TextEditorComponent
   implements AfterViewInit, ControlValueAccessor
 {
   ngAfterViewInit(): void {
-    setTimeout(() => {
       if (this.editorContainer) {
       this.initQuilEditor();
     } else {
       console.log('Editor container not found');
     }
-  }, 0)
   }
 
   ngAfterViewChecked() {
     console.log('ngAfterViewChecked', this.editorContainer)
-    setTimeout(() => console.log(this.editorContainer), 100)
   }
 
   @ViewChild('editorContainer') editorContainer!: ElementRef;
