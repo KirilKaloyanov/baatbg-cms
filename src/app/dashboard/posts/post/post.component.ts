@@ -51,11 +51,13 @@ export class PostComponent {
   ) {
     this.routeDataSubscription = this.route.data.subscribe((data) => {
       this.isCreate = data['isCreate'];
+      console.log('route.data', this.textEditor)
     });
 
     this.post$ = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
-        const id = params.get('id');
+    console.log('switchmap', this.textEditor)
+    const id = params.get('id');
         if (id) {
           return this.dbService.getIfDocument<Post>('posts', id).pipe(
             tap((post) =>{
@@ -75,11 +77,16 @@ export class PostComponent {
   }
 
   ngOnInit() {
+    console.log('ngOninit', this.textEditor)
     if (!this.isCreate) {
       this.postForm.get('id')?.disable();
     }
     this.post$.subscribe({
-      next: (post) => {},
+      next: (post) => {
+    console.log('post$ subsribed', this.textEditor)
+    console.log('post$ subsribed', post)
+
+      },
       error: (err) => {
         this.toaster.showError(err, () => {
           this.saveButtonDisabled = false;
@@ -89,7 +96,8 @@ export class PostComponent {
     });
   }
 
-  // ngAfterViewInit() {
+  ngAfterViewInit() {
+    console.log('ngAfterviewInit', this.textEditor)
   //   this.post$.subscribe({
   //     next: (post) => {},
   //     error: (err) => {
@@ -99,7 +107,7 @@ export class PostComponent {
   //       this.returnToParent();
   //     },
   //   });
-  // }
+  }
 
   savePost() {
     const payload = {
@@ -124,6 +132,8 @@ export class PostComponent {
   }
 
   returnToParent() {
+    console.log(this.textEditor)
+
     this.router.navigate(['/dashboard/posts']);
   }
 
