@@ -36,6 +36,7 @@ export class TextEditorComponent
 
   ngAfterViewChecked() {
     console.log('ngAfterViewChecked', this.editorContainer)
+    setTimeout(() => console.log(this.editorContainer), 100)
   }
 
   @ViewChild('editorContainer') editorContainer!: ElementRef;
