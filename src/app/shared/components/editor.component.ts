@@ -46,7 +46,7 @@ export class TextEditorComponent
   private isDisabled: boolean = false;
 
   public initQuilEditor() {
-    this.quill = new Quill(this.editorContainer.nativeElement, {
+    this.quill = new Quill('#editor', {
       modules: {
         toolbar: [
           ['bold', 'italic', 'underline'],
