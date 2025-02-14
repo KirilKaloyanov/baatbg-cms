@@ -29,6 +29,7 @@ export class TextEditorComponent
       this.initQuilEditor();
     } else {
       console.log('Editor container not found');
+      this.retryEditorInit()
     }
   }
 
@@ -67,6 +68,21 @@ export class TextEditorComponent
     this.quill.root.addEventListener('blur', () => {
       this.onTouched();
     });
+  }
+  retryEditorInit(attempts: number = 5) {
+    if (attempts === 0) {
+      console.error("Editor container could not be found after multiple attempts.");
+      return;
+    }
+  
+    setTimeout(() => {
+      if (this.editorContainer) {
+        this.initQuilEditor();
+      } else {
+        console.warn(`Retrying editor init. Attempts left: ${attempts - 1}`);
+        this.retryEditorInit(attempts - 1);
+      }
+    }, 200);
   }
 
   // ControlValueAccessor methods
