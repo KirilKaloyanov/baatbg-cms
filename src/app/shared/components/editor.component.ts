@@ -25,11 +25,17 @@ export class TextEditorComponent
   implements AfterViewInit, ControlValueAccessor
 {
   ngAfterViewInit(): void {
-    if (this.editorContainer) {
+    setTimeout(() => {
+      if (this.editorContainer) {
       this.initQuilEditor();
     } else {
       console.log('Editor container not found');
     }
+  }, 0)
+  }
+
+  ngAfterViewChecked() {
+    console.log('ngAfterViewChecked', this.editorContainer)
   }
 
   @ViewChild('editorContainer') editorContainer!: ElementRef;
@@ -42,7 +48,6 @@ export class TextEditorComponent
   private isDisabled: boolean = false;
 
   public initQuilEditor() {
-    setTimeout(() => {
     this.quill = new Quill(this.editorContainer.nativeElement, {
       modules: {
         toolbar: [
@@ -64,7 +69,6 @@ export class TextEditorComponent
     this.quill.root.addEventListener('blur', () => {
       this.onTouched();
     });
-    }, 0)
   }
 
   // ControlValueAccessor methods
