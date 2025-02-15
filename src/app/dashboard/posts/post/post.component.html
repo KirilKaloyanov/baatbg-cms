@@ -13,7 +13,7 @@
         <input type="text" id="subMenuPath" formControlName="subMenuPath"/>
         
         <label for="content">content</label>
-        <text-editor *ngIf="postForm.get('content')" formControlName="content"></text-editor>
+        <text-editor formControlName="content"></text-editor>
         <br />
         <button type="submit" [disabled]="saveButtonDisabled">{{ !saveButtonDisabled ? "Save" : "Wait..." }}</button>
         <button type="button" (click)="returnToParent()">Cancel</button>
