@@ -12,7 +12,7 @@ import Quill from 'quill';
 
 @Component({
   selector: 'text-editor',
-  templateUrl: 'editor.Component.html',
+  templateUrl: 'editor.component.html',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
