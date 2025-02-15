@@ -25,19 +25,8 @@ export class TextEditorComponent
   implements AfterViewInit, ControlValueAccessor
 {
   ngAfterViewInit(): void {//firebase
-      if (this.editorContainer) {
-      // this.initQuilEditor();
-    } else {
-      console.log('Editor: Editor container not found');
-      this.retryEditorInit()
-    }
+    this.initQuilEditor();
   }
-
-  ngAfterViewChecked() {//local
-    console.log('Editor: ngAfterViewChecked', this.editorContainer)
-  }
-
-  @ViewChild('editorContainer') editorContainer!: ElementRef;
 
   private quill!: Quill;
 
@@ -47,7 +36,6 @@ export class TextEditorComponent
   private isDisabled: boolean = false;
 
   public initQuilEditor() {
-    console.log("Editor: initQuilEditor")
     this.quill = new Quill('#editor', {
       modules: {
         toolbar: [
@@ -69,25 +57,6 @@ export class TextEditorComponent
     this.quill.root.addEventListener('blur', () => {
       this.onTouched();
     });
-  }
-  retryEditorInit(attempts: number = 5) {
-    if (attempts === 0) {
-      console.error("Editor container could not be found after multiple attempts.");
-      return;
-    }
-    if (this.editorContainer) {
-      this.initQuilEditor();
-      return;
-    }
-  
-    setTimeout(() => {
-      if (this.editorContainer) {
-        this.initQuilEditor();
-      } else {
-        console.warn(`Retrying editor init. Attempts left: ${attempts - 1}`);
-        this.retryEditorInit(attempts - 1);
-      }
-    }, 200);
   }
 
   // ControlValueAccessor methods
