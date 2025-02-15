@@ -24,7 +24,7 @@ import Quill from 'quill';
 export class TextEditorComponent
   implements AfterViewInit, ControlValueAccessor
 {
-  ngAfterViewInit(): void {
+  ngAfterViewInit(): void {//firebase
       if (this.editorContainer) {
       // this.initQuilEditor();
     } else {
@@ -33,7 +33,7 @@ export class TextEditorComponent
     }
   }
 
-  ngAfterViewChecked() {
+  ngAfterViewChecked() {//local
     console.log('Editor: ngAfterViewChecked', this.editorContainer)
   }
 
@@ -73,6 +73,10 @@ export class TextEditorComponent
   retryEditorInit(attempts: number = 5) {
     if (attempts === 0) {
       console.error("Editor container could not be found after multiple attempts.");
+      return;
+    }
+    if (this.editorContainer) {
+      this.initQuilEditor();
       return;
     }
   
