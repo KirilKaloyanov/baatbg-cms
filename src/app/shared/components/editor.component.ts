@@ -26,15 +26,15 @@ export class TextEditorComponent
 {
   ngAfterViewInit(): void {
       if (this.editorContainer) {
-      this.initQuilEditor();
+      // this.initQuilEditor();
     } else {
-      console.log('Editor container not found');
+      console.log('Editor: Editor container not found');
       this.retryEditorInit()
     }
   }
 
   ngAfterViewChecked() {
-    console.log('ngAfterViewChecked', this.editorContainer)
+    console.log('Editor: ngAfterViewChecked', this.editorContainer)
   }
 
   @ViewChild('editorContainer') editorContainer!: ElementRef;
@@ -47,6 +47,7 @@ export class TextEditorComponent
   private isDisabled: boolean = false;
 
   public initQuilEditor() {
+    console.log("Editor: initQuilEditor")
     this.quill = new Quill('#editor', {
       modules: {
         toolbar: [

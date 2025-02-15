@@ -28,7 +28,6 @@ import { TextEditorComponent } from '../../../shared/components/editor.component
   imports: [CommonModule, ReactiveFormsModule, TextEditorComponent],
 })
 export class PostComponent {
-
   @ViewChild(TextEditorComponent) textEditor!: TextEditorComponent;
   post$!: Observable<Post | string>;
   saveButtonDisabled: boolean = false;
@@ -51,53 +50,52 @@ export class PostComponent {
   ) {
     this.routeDataSubscription = this.route.data.subscribe((data) => {
       this.isCreate = data['isCreate'];
-      console.log('route.data', this.textEditor)
+      console.log('POST: route.data', this.textEditor);
     });
 
     this.post$ = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
-    console.log('switchmap', this.textEditor)
-    const id = params.get('id');
+        console.log('POST: switchmap', this.textEditor);
+        const id = params.get('id');
         if (id) {
           return this.dbService.getIfDocument<Post>('posts', id).pipe(
-            tap((post) =>{
+            tap((post) => {
               if (post) {
-                this.postForm.patchValue(post);
-                if(this.textEditor) {
-                  console.log('observable with post completes')
+                console.log('POST: observable with post completes');
+                if (this.textEditor) {
                   this.textEditor.initQuilEditor();
                 }
+                this.postForm.patchValue(post);
               }
             })
           );
         }
-        return of("create new post");
+        return of('create new post');
       })
     );
   }
 
   ngOnInit() {
-    console.log('ngOninit', this.textEditor)
+    console.log('POST: ngOninit', this.textEditor);
     if (!this.isCreate) {
       this.postForm.get('id')?.disable();
     }
-    this.post$.subscribe({
-      next: (post) => {
-    console.log('post$ subsribed', this.textEditor)
-    console.log('post$ subsribed', post)
-
-      },
-      error: (err) => {
-        this.toaster.showError(err, () => {
-          this.saveButtonDisabled = false;
-        });
-        this.returnToParent();
-      },
-    });
+    // this.post$.subscribe({
+    //   next: (post) => {
+    //     console.log('post$ subsribed', this.textEditor);
+    //     console.log('post$ subsribed', post);
+    //   },
+    //   error: (err) => {
+    //     this.toaster.showError(err, () => {
+    //       this.saveButtonDisabled = false;
+    //     });
+    //     this.returnToParent();
+    //   },
+    // });
   }
 
   ngAfterViewInit() {
-    console.log('ngAfterviewInit', this.textEditor)
+    console.log('POST: ngAfterviewInit', this.textEditor);
     this.post$.subscribe({
       next: (post) => {},
       error: (err) => {
@@ -132,7 +130,7 @@ export class PostComponent {
   }
 
   returnToParent() {
-    console.log(this.textEditor)
+    console.log(this.textEditor);
 
     this.router.navigate(['/dashboard/posts']);
   }
