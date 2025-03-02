@@ -2,9 +2,10 @@
   <thead>
     <tr>
       <th>ID</th>
-      <th>name</th>
       <th>path</th>
       <th>position</th>
+      <th>en</th>
+      <th>bg</th>
       <th></th>
     </tr>
   </thead>
@@ -12,9 +13,10 @@
     @for(item of (menu$ | async); track item.id) {
     <tr>
       <td>{{ item.id }}</td>
-      <td>{{ item.name }}</td>
       <td>{{ item.path }}</td>
       <td>{{ item.position }}</td>
+      <td>{{ item.label.en }}</td>
+      <td>{{ item.label.bg }}</td>
       <td><button (click)="editItem(item.id)">Edit</button></td>
     </tr>
     }

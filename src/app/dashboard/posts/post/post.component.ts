@@ -36,9 +36,12 @@ export class PostComponent {
 
   postForm: FormGroup = new FormGroup({
     id: new FormControl('', Validators.required),
-    content: new FormControl('', Validators.required),
     menuPath: new FormControl('', Validators.required),
     subMenuPath: new FormControl('', Validators.required),
+    headingBg: new FormControl('', Validators.required),
+    headingEn: new FormControl('', Validators.required),
+    textBg: new FormControl('', Validators.required),
+    textEn: new FormControl('', Validators.required),
   });
 
   constructor(
@@ -56,9 +59,18 @@ export class PostComponent {
         const id = params.get('id');
         if (id) {
           return this.dbService.getIfDocument<Post>('posts', id).pipe(
-            tap((post) => {
-              if (post) {
-                this.postForm.patchValue(post);
+            tap((dbPost) => {
+              if (dbPost) {
+                const uiPost = {
+                  id: dbPost.id,
+                  menuPath: dbPost.menuPath,
+                  subMenuPath: dbPost.subMenuPath,
+                  headingBg: dbPost.heading.bg,
+                  headingEn: dbPost.heading.en,
+                  textBg: dbPost.text.bg,
+                  textEn: dbPost.text.en,
+                }
+                this.postForm.patchValue(uiPost);
               }
             })
           );
@@ -88,9 +100,16 @@ export class PostComponent {
 
   savePost() {
     const payload = {
-      content: this.postForm.get('content')?.value,
       menuPath: this.postForm.get('menuPath')?.value,
       subMenuPath: this.postForm.get('subMenuPath')?.value,
+      heading: {
+        bg: this.postForm.get("headingBg")?.value,
+        en: this.postForm.get("headingEn")?.value,
+      },
+      text: {
+        en: this.postForm.get("textEn")?.value,
+        bg: this.postForm.get("textBg")?.value
+      }
     };
     const id = this.postForm.get('id')?.value;
     this.saveButtonDisabled = true;

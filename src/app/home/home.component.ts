@@ -3,12 +3,6 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../shared/services/auth.service';
 import { RouterModule } from '@angular/router';
 
-interface Item {
-  avatarId: string;
-  content: string;
-  heartCount: number;
-}
-
 @Component({
   selector: 'app-home',
   template: `

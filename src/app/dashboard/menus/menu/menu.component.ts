@@ -50,9 +50,16 @@ export class MenuComponent {
 
 
     this.menu$.subscribe({
-      next: (menu) => {
-        if (menu) {
-          this.menuForm.patchValue(menu);
+      next: (dbMenu) => {
+        if (dbMenu) {
+          const uiMenu = {
+            id: dbMenu.id,
+            path: dbMenu.path,
+            position: dbMenu.position,
+            en: dbMenu.label.en,
+            bg: dbMenu.label.bg
+          }
+          this.menuForm.patchValue(uiMenu);
         }
       },
       error: (err) => {
@@ -67,9 +74,10 @@ export class MenuComponent {
   initForm() {
     return new FormGroup({
       id: new FormControl('', Validators.required),
-      name: new FormControl('', Validators.required),
       path: new FormControl('', Validators.required),
       position: new FormControl(0, Validators.required),
+      en: new FormControl("", Validators.required),
+      bg: new FormControl("", Validators.required)
     });
   }
 
@@ -82,9 +90,12 @@ export class MenuComponent {
   saveMenu() {
     this.saveButtonDisabled = true;
     const payload = {
-      name: this.menuForm.get('name')?.value,
       path: this.menuForm.get('path')?.value,
       position: this.menuForm.get('position')?.value,
+      label: {
+        en: this.menuForm.get("en")?.value,
+        bg: this.menuForm.get("bg")?.value,
+      }
     };
     const id = this.menuForm.get('id')?.value; 
     this.dbService.saveDocument('menu', id, payload).subscribe({

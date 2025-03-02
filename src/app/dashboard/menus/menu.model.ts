@@ -1,6 +1,9 @@
 export interface Menu {
-    id: string,
-    name: string,
-    path: string, 
-    position: number
+    id: string;
+    path: string;
+    position: number;
+    label: {
+        en: string,
+        bg: string
+    }
 }
