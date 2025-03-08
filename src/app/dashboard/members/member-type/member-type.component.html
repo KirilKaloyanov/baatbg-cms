@@ -1,0 +1,26 @@
+@if (itemForEditing?.id == "") {
+    <ng-container *ngTemplateOutlet="memberTypeForm"></ng-container>
+} @else {
+    <button (click)="createItem()">Create new</button>
+}
+
+@for(item of (memberTypes$ | async); track item.id) { 
+    @if(item.id ==itemForEditing?.id) {
+        <ng-container *ngTemplateOutlet="memberTypeForm"></ng-container>
+    } @else {
+        <div (click)="setItemForEditing(item)">{{ item.id }}</div>
+    } 
+}
+
+<ng-template #memberTypeForm>
+  <form [formGroup]="mtForm">
+    <label for="id">ID: </label>
+    <input name="id" id="id" formControlName="id" />
+    <label for="bg">Български: </label>
+    <input name="bg" id="bg" formControlName="bg" />
+    <label for="en">English: </label>
+    <input name="en" id="en" formControlName="en" />
+    <button (click)="saveItem()">Save</button>
+    <button (click)="setItemForEditing(null)">Cancel</button>
+  </form>
+</ng-template>

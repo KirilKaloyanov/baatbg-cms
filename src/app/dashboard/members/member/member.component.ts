@@ -1,23 +1,25 @@
 import { Component } from '@angular/core';
-import { DbService } from './../../../shared/services/db.service';
 import { Observable } from 'rxjs';
-
-interface Member {
-  id: string;
-  name: string;
-}
+import { ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { DbService } from '@shared/services/db.service';
+import { Member } from '../member.model';
 
 @Component({
   selector: 'app-member',
-  template: ` <h1>member</h1> `,
+  templateUrl: './member.component.html',
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
 })
 export class MemberComponent {
-  member$!: Observable<Member>;
-  constructor(private dbService: DbService) {
-    this.member$ = this.dbService.getIfDocument('members', 'dshka');
-    this.member$.subscribe({
-      next: (val) => console.log(val),
-      error: (err) => console.log(err),
-    });
+  members$!: Observable<Member[]>;
+  constructor(private dbService: DbService, private router: Router) {}
+
+  ngOnInit() {
+    this.members$ = this.dbService.getMembersCollection();
+  }
+
+  addNewItem() {
+    this.router.navigate(['/dashboard/members/create']);
   }
 }

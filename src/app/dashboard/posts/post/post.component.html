@@ -1,33 +1,37 @@
-
 <div *ngIf="post$ | async as post">
-    <h2>{{!isCreate ? "Edit post" : "Create new post"}}</h2>
+  <h2>{{ !isCreate ? "Edit post" : "Create new post" }}</h2>
 
-    <form [formGroup]="postForm" (ngSubmit)="savePost()">
-        <label for="post-id">ID</label>
-        <input type="text" id="post-id" formControlName="id"/>
-        
-        <label for="menuPath">menu-path</label>
-        <input type="text" id="menuPath" formControlName="menuPath"/>
-        
-        <label for="subMenuPath">submenu-path</label>
-        <input type="text" id="subMenuPath" formControlName="subMenuPath"/>
-        
-        <label for="headingBg">BG</label>
-        <input type="text" id="headingBg" formControlName="headingBg"/>
-        
-        <label for="headingEn">EN</label>
-        <input type="text" id="headingEn" formControlName="headingEn"/>
+  <form [formGroup]="postForm" (ngSubmit)="savePost()">
+    <label for="post-id">ID</label>
+    <input type="text" id="post-id" formControlName="id" />
 
-        <label for="textBg">Съдържание</label>
-        <text-editor elementId="contentBg" formControlName="textBg"></text-editor>
-        <br />
-        
-        <label for="textEn">Content</label>
-        <text-editor elementId="contentEn" formControlName="textEn"></text-editor>
-        <br />
+    <label for="menuPath">menu-path</label>
+    <select id="menuPath" formControlName="menuPath">
+      <option [value]="menu.path" *ngFor="let menu of menuList">
+        {{ menu.path }}
+      </option>
+    </select>
 
-        <button type="submit" [disabled]="saveButtonDisabled">{{ !saveButtonDisabled ? "Save" : "Wait..." }}</button>
-        <button type="button" (click)="returnToParent()">Cancel</button>
-    </form>
+    <label for="subMenuPath">submenu-path</label>
+    <input type="text" id="subMenuPath" formControlName="subMenuPath" />
 
+    <label for="headingBg">BG</label>
+    <input type="text" id="headingBg" formControlName="headingBg" />
+
+    <label for="headingEn">EN</label>
+    <input type="text" id="headingEn" formControlName="headingEn" />
+
+    <label for="textBg">Съдържание</label>
+    <text-editor elementId="contentBg" formControlName="textBg"></text-editor>
+    <br />
+
+    <label for="textEn">Content</label>
+    <text-editor elementId="contentEn" formControlName="textEn"></text-editor>
+    <br />
+
+    <button type="submit" [disabled]="saveButtonDisabled">
+      {{ !saveButtonDisabled ? "Save" : "Wait..." }}
+    </button>
+    <button type="button" (click)="returnToParent()">Cancel</button>
+  </form>
 </div>

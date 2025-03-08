@@ -1,26 +1,29 @@
-
 <div *ngIf="menu$">
+  <h2>{{ !isCreate ? "Edit menu" : "Create new menu" }}</h2>
 
-    <h2>{{!isCreate ? "Edit menu" : "Create new menu"}}</h2>
+  <form [formGroup]="menuForm" (ngSubmit)="saveMenu()">
+    <label for="menu-id"
+      >ID (lowercase, dash-separated ex.: "some-title")</label
+    >
+    <input type="text" id="menu-id" formControlName="id" />
 
-    <form [formGroup]="menuForm" (ngSubmit)="saveMenu()">
-        <label for="menu-id">ID</label>
-        <input type="text" id="menu-id" formControlName="id"/>
-        
-        <label for="en">EN</label>
-        <input type="text" id="en" formControlName="en"/>
-        
-        <label for="bg">BG</label>
-        <input type="text" id="bg" formControlName="bg"/>
-        
-        <label for="path">Path</label>
-        <input type="text" id="path" formControlName="path"/>
-        
-        <label for="position">Position</label>
-        <input type="number" id="position" formControlName="position"/>
-        
-        <button type="submit" [disabled]="saveButtonDisabled">{{ !saveButtonDisabled ? "Save" : "Wait..." }}</button>
-        <button type="button" (click)="returnToParent()">Cancel</button>
-    </form>
+    <label for="en">EN</label>
+    <input type="text" id="en" formControlName="en" />
 
+    <label for="bg">BG</label>
+    <input type="text" id="bg" formControlName="bg" />
+
+    <label for="path"
+      >Path (should not start with 'en', e.g. 'engagement')</label
+    >
+    <input type="text" id="path" formControlName="path" />
+
+    <label for="position">Position</label>
+    <input type="number" id="position" formControlName="position" />
+
+    <button type="submit" [disabled]="saveButtonDisabled">
+      {{ !saveButtonDisabled ? "Save" : "Wait..." }}
+    </button>
+    <button type="button" (click)="returnToParent()">Cancel</button>
+  </form>
 </div>

@@ -21,6 +21,7 @@ import {
 import { ToasterService } from '../../../shared/services/toaster.service';
 import { CommonModule } from '@angular/common';
 import { TextEditorComponent } from '../../../shared/components/editor.component';
+import { Menu } from '../../menus/menu.model';
 
 @Component({
   selector: 'edit-post',
@@ -29,6 +30,7 @@ import { TextEditorComponent } from '../../../shared/components/editor.component
 })
 export class PostComponent {
   post$!: Observable<Post | string>;
+  menuList!: Menu[];
   saveButtonDisabled: boolean = false;
   isCreate!: boolean;
 
@@ -54,6 +56,10 @@ export class PostComponent {
       this.isCreate = data['isCreate'];
     });
 
+    this.dbService.getMenuCollection().subscribe((menus) => {
+      this.menuList = menus;
+    });
+
     this.post$ = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         const id = params.get('id');
@@ -69,7 +75,7 @@ export class PostComponent {
                   headingEn: dbPost.heading.en,
                   textBg: dbPost.text.bg,
                   textEn: dbPost.text.en,
-                }
+                };
                 this.postForm.patchValue(uiPost);
               }
             })
@@ -103,13 +109,13 @@ export class PostComponent {
       menuPath: this.postForm.get('menuPath')?.value,
       subMenuPath: this.postForm.get('subMenuPath')?.value,
       heading: {
-        bg: this.postForm.get("headingBg")?.value,
-        en: this.postForm.get("headingEn")?.value,
+        bg: this.postForm.get('headingBg')?.value,
+        en: this.postForm.get('headingEn')?.value,
       },
       text: {
-        en: this.postForm.get("textEn")?.value,
-        bg: this.postForm.get("textBg")?.value
-      }
+        en: this.postForm.get('textEn')?.value,
+        bg: this.postForm.get('textBg')?.value,
+      },
     };
     const id = this.postForm.get('id')?.value;
     this.saveButtonDisabled = true;

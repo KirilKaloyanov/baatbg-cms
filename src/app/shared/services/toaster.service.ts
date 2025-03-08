@@ -1,5 +1,4 @@
 import { Injectable } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
 import { BehaviorSubject } from "rxjs";
 
 
@@ -11,12 +10,17 @@ export class ToasterService {
 
     toastMessage$ = this.toastMessageSubject.asObservable();
 
+    timeOut: any = null;
+
 
     showSuccess(message: string = 'Operation successful', redirectFn?: () => void) {
+        if (this.timeOut) {
+            clearTimeout(this.timeOut)
+        }
         const notification = {message, isError: false}
         this.toastMessageSubject.next( notification );
 
-        setTimeout(() => {
+        this.timeOut = setTimeout(() => {
             this.toastMessageSubject.next(null);
             if (typeof redirectFn == 'function') redirectFn();
         }, 1500) 
@@ -29,6 +33,6 @@ export class ToasterService {
         setTimeout(() => {
             this.toastMessageSubject.next(null);
             if (typeof redirectFn == 'function') redirectFn();
-        }, 2000) 
+        }, 3500) 
     }
 }

@@ -1,0 +1,9 @@
+<ul>
+  @for(item of (members$ | async); track item.id) {
+  <li>
+    <a [routerLink]="['/dashboard/members/edit', item.id]">{{ item.id }}</a>
+  </li>
+  }
+</ul>
+<button (click)="addNewItem()">Create new member</button>
+

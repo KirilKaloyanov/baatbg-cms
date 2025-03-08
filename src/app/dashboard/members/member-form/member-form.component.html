@@ -1,0 +1,55 @@
+<div *ngIf="member$">
+    <h2>{{ !isCreate ? "Edit member" : "Create new member" }}</h2>
+    <form [formGroup]="memberForm" (ngSubmit)="saveMember()">
+        <label for="member-id">ID*: </label>
+        <input type="text" id="member-id" formControlName="id" />
+
+        <label for="memberType">Member type*: </label>
+        <select id="memberType" formControlName="memberType">
+            <option [value]="type.id" *ngFor="let type of memberTypes">
+                {{type.label.bg}} - {{type.label.en}}
+            </option>
+        </select>
+
+        <label for="nameBg">NameBg*: </label>
+        <input type="text" id="nameBg" formControlName="nameBg" />
+
+        <label for="nameEn">nameEn*: </label>
+        <input type="text" id="nameEn" formControlName="nameEn" />
+        
+        <label for="descriptionBg">descriptionBg*: </label>
+        <textarea id="descriptionBg" rows="3" formControlName="descriptionBg"></textarea> 
+        
+        
+        <label for="descriptionEn">descriptionEn*: </label>
+        <textarea id="descriptionEn" rows="3" formControlName="descriptionEn"></textarea> 
+        
+        <label for="addressBg">addressBg: </label>
+        <input type="text" id="addressBg" formControlName="addressBg" />
+        
+        <label for="addressEn">addressEn: </label>
+        <input type="text" id="addressEn" formControlName="addressEn" />
+        
+        <label for="website">website: </label>
+        <input type="text" id="website" formControlName="website" />
+        
+        <label for="phone">phone: </label>
+        <input type="text" id="phone" formControlName="phone" />
+        
+        <label for="email">email: </label>
+        <input type="text" id="email" formControlName="email" />
+        
+        <label for="img">img: </label>
+        <img [src]="uploadedImage" *ngIf="uploadedImage" alt="member-logo" style="width: 70px;">
+        <button *ngIf="uploadedImage" (click)="onFileRemove($event)">
+            Remove
+        </button>
+        <input type="file" id="img" (change)="onFileSelect($event)"/>
+        
+        <button type="submit" [disabled]="saveButtonDisabled">
+            {{ !saveButtonDisabled ? "Save" : "Wait..." }}
+        </button>
+        <button type="button" (click)="returnToParent()">Cancel</button>
+
+    </form>
+</div>

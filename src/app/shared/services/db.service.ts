@@ -11,8 +11,13 @@ import {
   doc,
   docData,
   getDoc,
+  setDoc,
 } from '@angular/fire/firestore';
-import { setDoc } from 'firebase/firestore';
+import {
+  Storage,
+  getDownloadURL,
+  uploadBytesResumable,
+} from '@angular/fire/storage';
 import {
   catchError,
   finalize,
@@ -28,16 +33,20 @@ import {
 import { LoaderService } from './loader.service';
 import { Menu } from '../../dashboard/menus/menu.model';
 import { Post } from '../../dashboard/posts/post.model';
-
+import { Member, MemberType } from '../../dashboard/members/member.model';
+import { ref } from '@angular/fire/storage';
 @Injectable({ providedIn: 'root' })
 export class DbService {
   menus$!: Observable<Menu[]>;
   posts$!: Observable<Post[]>;
+  members$!: Observable<Member[]>;
+  memberTypes$!: Observable<MemberType[]>;
 
   constructor(
     private firestore: Firestore,
     private injector: Injector,
-    private loaderService: LoaderService
+    private loaderService: LoaderService,
+    private storage: Storage
   ) {
     const menuRef = collection(this.firestore, 'menu');
     this.menus$ = collectionData(menuRef, { idField: 'id' }) as Observable<
@@ -48,6 +57,16 @@ export class DbService {
     this.posts$ = collectionData(postRef, { idField: 'id' }) as Observable<
       Post[]
     >;
+
+    const membersRef = collection(this.firestore, 'members');
+    this.members$ = collectionData(membersRef, { idField: 'id' }) as Observable<
+      Member[]
+    >;
+
+    const memberTypeRef = collection(this.firestore, 'memberType');
+    this.memberTypes$ = collectionData(memberTypeRef, {
+      idField: 'id',
+    }) as Observable<MemberType[]>;
   }
 
   getMenuCollection() {
@@ -58,15 +77,23 @@ export class DbService {
     return this.posts$;
   }
 
+  getMembersCollection() {
+    return this.members$;
+  }
+
+  getMemberTypeCollection() {
+    return this.memberTypes$;
+  }
+
   getIfDocument<T>(collectionName: string, docName: string) {
     return this.runInFirebaseContext(() => {
       const docRef = doc(this.firestore, `${collectionName}/${docName}`);
       return from(getDoc(docRef)).pipe(
         switchMap((docSnap) => {
-          console.log(docSnap)
+          console.log(docSnap);
           if (!docSnap.exists())
             return throwError(() => 'Document not found in the database');
-          return of({id: docSnap.id, ...docSnap.data()}) as Observable<T>;
+          return of({ id: docSnap.id, ...docSnap.data() }) as Observable<T>;
         })
       );
     });
@@ -81,7 +108,6 @@ export class DbService {
   }
 
   saveDocument(collectionName: string, id: string, payload: {}) {
-    
     return this.runInFirebaseContext(() => {
       if (!id) return throwError(() => ({ message: 'Invalid ID' }));
       console.log(id);
@@ -90,10 +116,32 @@ export class DbService {
     });
   }
 
+  uploadFile(file: File) {
+    return this.runInFirebaseContext(() => {
+      return new Observable((observer) => {
+        const storageRef = ref(this.storage, file.name);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => observer.next(snapshot),
+          (error) => observer.error(error),
+          () => observer.complete()
+        );
+      })
+    })
+  }
+
+  getFileUrl(filename: string){
+    return this.runInFirebaseContext(() => {
+      const storageRef = ref(this.storage, filename)
+      return from(getDownloadURL(storageRef))
+    })
+  }
+
   runInFirebaseContext<T>(fn: () => Observable<T>): Observable<T> {
     return new Observable((observer) => {
       runInInjectionContext(this.injector, () => {
-        // this.loaderService.show();
+        this.loaderService.show();
 
         // console.log('FB context start', fn);
 
