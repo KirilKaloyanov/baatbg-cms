@@ -137,8 +137,8 @@ export class MemberFormComponent {
         img: this.uploadedImage
       }
       if (this.uploadedImage) payload.img = this.uploadedImageName;
-      if (this.fileForUpload) payload.img = this.fileForUpload.name
-      console.log(payload)
+      else if (this.fileForUpload) payload.img = this.fileForUpload.name;
+      else payload.img = ''; 
       this.dbService.saveDocument('members', id, payload).subscribe({
         complete: () => {
           this.toaster.showSuccess("Successfully saved member")

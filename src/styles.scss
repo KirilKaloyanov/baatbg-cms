@@ -25,3 +25,30 @@ body {
 button {
     margin: 5px 5px 5px 0;
 }
+
+.nofloat::before {
+    content: '✖';
+    color: #555
+}
+  
+.leftfloat::before {
+    content: '⬅';
+    color: #555
+}
+  
+.rightfloat::before {
+    content: '➡';
+    color: #555
+}
+  
+.nofloat:hover::before {
+    color: #06c
+    }
+
+.leftfloat:hover::before {
+    color: #06c
+}
+
+.rightfloat:hover::before {
+    color: #06c
+}

@@ -16,6 +16,7 @@ import {
 import {
   Storage,
   getDownloadURL,
+  listAll,
   uploadBytesResumable,
 } from '@angular/fire/storage';
 import {
@@ -35,6 +36,7 @@ import { Menu } from '../../dashboard/menus/menu.model';
 import { Post } from '../../dashboard/posts/post.model';
 import { Member, MemberType } from '../../dashboard/members/member.model';
 import { ref } from '@angular/fire/storage';
+import { FileItem } from '@shared/interfaces/fileItem.model';
 @Injectable({ providedIn: 'root' })
 export class DbService {
   menus$!: Observable<Menu[]>;
@@ -137,6 +139,33 @@ export class DbService {
       return from(getDownloadURL(storageRef))
     })
   }
+
+  listAllFilesAndFloders(path: string = '') {
+    return this.runInFirebaseContext<FileItem[]>(() => {
+
+      const storageRef = ref(this.storage, path);
+      
+      return from(listAll(storageRef)).pipe(
+        map((res) => {
+          return [
+            ...res.prefixes.map((folderRef) => ({
+              name: folderRef.name,
+              path: folderRef.fullPath,
+              isFolder: true,
+              expanded: false
+            })),
+            ...res.items.map((fileRef) => ({
+              name: fileRef.name,
+              path: fileRef.fullPath,
+              isFolder: false,
+              expanded: false
+            }))
+          ] as FileItem[];
+        })
+      );
+    })
+
+}
 
   runInFirebaseContext<T>(fn: () => Observable<T>): Observable<T> {
     return new Observable((observer) => {

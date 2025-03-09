@@ -6,7 +6,7 @@ import { PostService } from './post.service';
 import { Router, RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'dashboard-layout',
+  selector: 'app-posts',
   templateUrl: 'posts.component.html',
   styleUrl: 'posts.component.scss',
   imports: [CommonModule, RouterModule],

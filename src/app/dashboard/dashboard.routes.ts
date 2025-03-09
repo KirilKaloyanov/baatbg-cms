@@ -7,12 +7,14 @@ import { PostComponent } from './posts/post/post.component';
 import { MemberComponent } from './members/member/member.component';
 import { MemberFormComponent } from './members/member-form/member-form.component'
 import { MemberTypeComponent } from './members/member-type/member-type.component';
+import { StorageComponent } from './storage/storage.component';
 
 export const routes: Routes = [
   {
     path: '',
     component: DashboardLayoutComponent,
     children: [
+      { path: 'storage', component: StorageComponent},
       { path: 'menus', component: MenusComponent },
       {
         path: 'menus/edit/:id',
