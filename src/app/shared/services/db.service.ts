@@ -15,14 +15,13 @@ import {
 } from '@angular/fire/firestore';
 import {
   Storage,
+  ref,
   getDownloadURL,
   listAll,
   uploadBytesResumable,
 } from '@angular/fire/storage';
 import {
   catchError,
-  finalize,
-  firstValueFrom,
   from,
   map,
   Observable,
@@ -35,8 +34,7 @@ import { LoaderService } from './loader.service';
 import { Menu } from '../../dashboard/menus/menu.model';
 import { Post } from '../../dashboard/posts/post.model';
 import { Member, MemberType } from '../../dashboard/members/member.model';
-import { ref } from '@angular/fire/storage';
-import { FileItem } from '@shared/interfaces/fileItem.model';
+import { FileItem } from '@shared/interfaces/fileItem.model'
 @Injectable({ providedIn: 'root' })
 export class DbService {
   menus$!: Observable<Menu[]>;
@@ -118,24 +116,27 @@ export class DbService {
     });
   }
 
-  uploadFile(file: File) {
+  uploadFile(file: File, filepath: string = '') {
     return this.runInFirebaseContext(() => {
       return new Observable((observer) => {
-        const storageRef = ref(this.storage, file.name);
+        const storageRef = ref(this.storage, filepath + file.name);
         const uploadTask = uploadBytesResumable(storageRef, file);
         uploadTask.on(
           'state_changed',
           (snapshot) => observer.next(snapshot),
           (error) => observer.error(error),
-          () => observer.complete()
+          () => {
+            observer.next('uploaded')
+            observer.complete()
+          }
         );
       })
     })
   }
 
-  getFileUrl(filename: string){
+  getFileUrl(filename: string, filepath: string = ''){
     return this.runInFirebaseContext(() => {
-      const storageRef = ref(this.storage, filename)
+      const storageRef = ref(this.storage, filepath + filename)
       return from(getDownloadURL(storageRef))
     })
   }
@@ -152,12 +153,13 @@ export class DbService {
               name: folderRef.name,
               path: folderRef.fullPath,
               isFolder: true,
-              expanded: false
+              expanded: false,
+              children: undefined
             })),
             ...res.items.map((fileRef) => ({
               name: fileRef.name,
               path: fileRef.fullPath,
-              isFolder: false,
+              isFolder: fileRef.fullPath.endsWith('/'),
               expanded: false
             }))
           ] as FileItem[];

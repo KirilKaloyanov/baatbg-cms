@@ -1,30 +1,15 @@
 <h1>Storage here</h1>
-
 <ul>
-    <ng-container *ngFor="let item of fileTree">
-        <li *ngIf="item.isFolder" (click)="toggleFolder(item)">
-            📁 {{ item.name }} 
-            <span *ngIf="item.expanded">[-]</span>
-            <span *ngIf="!item.expanded">[+]</span>
-            <ul *ngIf="item.expanded">
-
-                <ng-container *ngFor="let child of item.children">
-                    <li *ngIf="child.isFolder" (click)="toggleFolder(child)">
-                        📁 {{ child.name }}
-                        <span *ngIf="child.expanded">[-]</span>
-                        <span *ngIf="!child.expanded">[+]</span>
-                    </li>
-                    <li *ngIf="!child.isFolder">
-                        {{ child.name }}
-                    </li>
-                </ng-container>
-
-            </ul>
-        </li>
-        <li *ngIf="!item.isFolder">
-            {{ item.name }}
-        </li>
-
-
-    </ng-container>
-</ul>
+    @for (folder of fileTree(); track folder.path) {
+      <li>
+        <span (click)="toggleFolder(folder)">
+          {{ folder.expanded ? '▼' : folder.isFolder ? '▶' : '' }} {{ folder.name }}
+        </span>
+  
+        @if (folder.expanded) {
+          <folder-tree [folder]="folder"></folder-tree>
+        }
+      </li>
+    }
+  </ul>
+  

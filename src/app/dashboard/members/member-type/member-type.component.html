@@ -1,8 +1,4 @@
-@if (itemForEditing?.id == "") {
-    <ng-container *ngTemplateOutlet="memberTypeForm"></ng-container>
-} @else {
-    <button (click)="createItem()">Create new</button>
-}
+<h1>Member types</h1>
 
 @for(item of (memberTypes$ | async); track item.id) { 
     @if(item.id ==itemForEditing?.id) {
@@ -10,6 +6,12 @@
     } @else {
         <div (click)="setItemForEditing(item)">{{ item.id }}</div>
     } 
+}
+<div>-----------------</div>
+@if (itemForEditing?.id == "") {
+    <ng-container *ngTemplateOutlet="memberTypeForm"></ng-container>
+} @else {
+    <button (click)="createItem()">Create new</button>
 }
 
 <ng-template #memberTypeForm>

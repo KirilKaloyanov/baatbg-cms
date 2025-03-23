@@ -57,7 +57,7 @@ export class MemberFormComponent {
           const imgFileName = dbMember?.img || null;
           this.uploadedImageName = imgFileName;
           const imageUrl$ = imgFileName 
-          ? this.dbService.getFileUrl(imgFileName)
+          ? this.dbService.getFileUrl(imgFileName, `members/profiles/${dbMember?.id}/`)
           : of(null);
           return combineLatest([of(dbMember), imageUrl$])
         }),
@@ -139,10 +139,13 @@ export class MemberFormComponent {
       if (this.uploadedImage) payload.img = this.uploadedImageName;
       else if (this.fileForUpload) payload.img = this.fileForUpload.name;
       else payload.img = ''; 
+      
       this.dbService.saveDocument('members', id, payload).subscribe({
         complete: () => {
           this.toaster.showSuccess("Successfully saved member")
-          if (this.fileForUpload) this.storage.uploadFile(this.fileForUpload);
+          if (this.fileForUpload) {
+            this.storage.uploadFile(this.fileForUpload, `members/profiles/${id}/`).subscribe()
+          }
           this.returnToParent();
         },
         error: (error) => {

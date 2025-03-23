@@ -28,17 +28,20 @@ button {
 
 .nofloat::before {
     content: '✖';
-    color: #555
+    color: #555;
+    font-weight: bold;
 }
   
 .leftfloat::before {
     content: '⬅';
-    color: #555
+    color: #555;
+    font-weight: bold;
 }
   
 .rightfloat::before {
     content: '➡';
-    color: #555
+    color: #555;
+    font-weight: bold;
 }
   
 .nofloat:hover::before {

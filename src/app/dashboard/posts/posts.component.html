@@ -1,3 +1,4 @@
+<h1>Posts collection</h1>
 <div>
     @for(item of (groupedPosts$ | async); track item[0].menuPath) {
       <div>{{ item[0].menuPath }}</div>
