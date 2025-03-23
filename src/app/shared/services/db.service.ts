@@ -19,6 +19,7 @@ import {
   getDownloadURL,
   listAll,
   uploadBytesResumable,
+  deleteObject,
 } from '@angular/fire/storage';
 import {
   catchError,
@@ -34,7 +35,7 @@ import { LoaderService } from './loader.service';
 import { Menu } from '../../dashboard/menus/menu.model';
 import { Post } from '../../dashboard/posts/post.model';
 import { Member, MemberType } from '../../dashboard/members/member.model';
-import { FileItem } from '@shared/interfaces/fileItem.model'
+import { FileItem } from '@shared/interfaces/fileItem.model';
 @Injectable({ providedIn: 'root' })
 export class DbService {
   menus$!: Observable<Menu[]>;
@@ -126,26 +127,25 @@ export class DbService {
           (snapshot) => observer.next(snapshot),
           (error) => observer.error(error),
           () => {
-            observer.next('uploaded')
-            observer.complete()
+            observer.next('uploaded');
+            observer.complete();
           }
         );
-      })
-    })
+      });
+    });
   }
 
-  getFileUrl(filename: string, filepath: string = ''){
+  getFileUrl(filepath: string) {
     return this.runInFirebaseContext(() => {
-      const storageRef = ref(this.storage, filepath + filename)
-      return from(getDownloadURL(storageRef))
-    })
+      const storageRef = ref(this.storage, filepath );
+      return from(getDownloadURL(storageRef));
+    });
   }
 
   listAllFilesAndFloders(path: string = '') {
     return this.runInFirebaseContext<FileItem[]>(() => {
-
       const storageRef = ref(this.storage, path);
-      
+
       return from(listAll(storageRef)).pipe(
         map((res) => {
           return [
@@ -154,20 +154,26 @@ export class DbService {
               path: folderRef.fullPath,
               isFolder: true,
               expanded: false,
-              children: undefined
+              children: undefined,
             })),
             ...res.items.map((fileRef) => ({
               name: fileRef.name,
               path: fileRef.fullPath,
               isFolder: fileRef.fullPath.endsWith('/'),
-              expanded: false
-            }))
+              expanded: false,
+            })),
           ] as FileItem[];
         })
       );
-    })
+    });
+  }
 
-}
+  deleteFolder(path: string) {
+    return this.runInFirebaseContext(() => {
+      const storageRef = ref(this.storage, path + '');
+      return from(deleteObject(storageRef));
+    });
+  }
 
   runInFirebaseContext<T>(fn: () => Observable<T>): Observable<T> {
     return new Observable((observer) => {

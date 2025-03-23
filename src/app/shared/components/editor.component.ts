@@ -197,7 +197,7 @@ export class TextEditorComponent
               .subscribe({
                 complete: () => {
                   this.dbService
-                    .getFileUrl(fileToUpload.name, 'posts/' + filepath)
+                    .getFileUrl('posts/' + filepath + fileToUpload.name)
                     .subscribe((url) => {
                       let index = (this.quill.getSelection() || {}).index;
                       if (index == undefined || index < 0)

@@ -8,43 +8,31 @@ import { FolderTreeComponent } from "./folder/folder.component";
 
 @Component({
     selector: 'app-storage',
-    templateUrl: "./storage.component.html",
+    template: `
+        <h1>Storage here</h1>
+        <folder-tree [folder]="fileTree()"></folder-tree>
+
+`,
     imports: [CommonModule, FolderTreeComponent]
 })
 export class StorageComponent { 
-    fileTree = signal<FileItem[]>([]);
+
+    fileTree = signal<FileItem>({
+        name: 'root',
+        path: '',
+        isFolder: true,
+        expanded: true,
+    })
+
     constructor(private dbService: DbService){
+        this.loadItems();
+    }
+
+    loadItems() {
         this.dbService.listAllFilesAndFloders('')
             .subscribe((items) => {
-                this.fileTree.set(items);
+                this.fileTree.update(fileTree => ({...fileTree, children: items}))
             });
     }
 
-
-
-    loadFolder(path: string, parentNode?: FileItem) {
-        this.dbService.listAllFilesAndFloders(path)
-            .subscribe((items) => {
-                if (parentNode) {
-                        parentNode.children = items;
-                    parentNode.expanded = true;
-                } 
-            });
-    }
-
-    toggleFolder(folder: FileItem) {
-        if (!folder.isFolder) return;
-            folder.expanded = !folder.expanded;
-
-            if (folder.expanded && (!folder.children || folder.children.length === 0)) {
-                this.dbService.listAllFilesAndFloders(folder.path).subscribe((items) => {
-                    folder.children = items;
-                    // console.log(folder)
-                    this.fileTree.update((tree) => [...tree])
-                    // console.log(this.fileTree())
-            });
-            } else {
-                this.fileTree.update((tree) => [...tree])
-            }
-    }
 }

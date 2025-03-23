@@ -57,7 +57,7 @@ export class MemberFormComponent {
           const imgFileName = dbMember?.img || null;
           this.uploadedImageName = imgFileName;
           const imageUrl$ = imgFileName 
-          ? this.dbService.getFileUrl(imgFileName, `members/profiles/${dbMember?.id}/`)
+          ? this.dbService.getFileUrl(`members/profiles/${dbMember?.id}/${imgFileName}`)
           : of(null);
           return combineLatest([of(dbMember), imageUrl$])
         }),
