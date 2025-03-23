@@ -1,6 +1,6 @@
-<h1>Menus collection</h1>
+<h1>Menu collection</h1>
 
-<table>
+<!-- <table>
   <thead>
     <tr>
       <th>ID</th>
@@ -25,3 +25,45 @@
   </tbody>
 </table>
 <button (click)="addNewItem()">Create Menu</button>
+<div>-----</div>
+<div>-----</div> -->
+
+<div class="mat-elevation-z2">
+  <table mat-table class="full-width-table">
+
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef>ID</th>
+      <td mat-cell *matCellDef="let row">{{row.id}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="path">
+      <th mat-header-cell *matHeaderCellDef>Path</th>
+      <td mat-cell *matCellDef="let row">{{row.path}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="position">
+      <th mat-header-cell *matHeaderCellDef>Position</th>
+      <td mat-cell *matCellDef="let row">{{row.position}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="en">
+      <th mat-header-cell *matHeaderCellDef>EN</th>
+      <td mat-cell *matCellDef="let row">{{row.label.en}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="bg">
+      <th mat-header-cell *matHeaderCellDef>BG</th>
+      <td mat-cell *matCellDef="let row">{{row.label.bg}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let row"><button mat-button extended (click)="editItem(row.id)"><mat-icon>edit</mat-icon>Edit</button></td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+  </table>
+  <button mat-button extended (click)="addNewItem()"><mat-icon>menu_open</mat-icon>Create Menu</button>
+</div>

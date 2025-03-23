@@ -1,24 +1,32 @@
-import { Component, inject } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { collection, collectionData, Firestore } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
-import { DbService } from '../../shared/services/db.service';
 import { Router, RouterModule } from '@angular/router';
+import { MatTable, MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { Observable } from 'rxjs';
+import { DbService } from '@shared/services/db.service';
 import { Menu } from './menu.model';
 
 
 @Component({
   selector: 'app-menus',
   templateUrl: 'menus.component.html', 
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, MatTableModule, MatButtonModule, MatIconModule],
 })
 export class MenusComponent {
-    menu$!: Observable<Menu[]>;
+
+  @ViewChild(MatTable) table!: MatTable<Menu>;
+
+  menu$!: Observable<Menu[]>;
+
+  displayedColumns = [ 'id', 'path', 'position', 'en', 'bg', 'action' ];
 
   constructor(private dbService: DbService, private router: Router) {}
 
   ngOnInit() {
     this.menu$ = this.dbService.getMenuCollection();
+    this.menu$.subscribe((menuItems) => this.table.dataSource = menuItems);
   }
 
   
