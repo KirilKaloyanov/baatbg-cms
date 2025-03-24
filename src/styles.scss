@@ -3,50 +3,173 @@
 // For more information: https://material.angular.io/guide/theming
 @use '@angular/material' as mat;
 
+// https://themes.angular-material.dev/
+/* These tokens are generated using https://themes.angular-material.dev/ */
+/* Preview: https://themes.angular-material.dev/?seed-error=%23ba1a1a&seed-neutral=%23d7cfa1&seed-neutral-variant=%2370787d&seed-primary=%2305556f&seed-secondary=%2384869b&seed-tertiary=%23849e8a */
+/* Seed Colors: primary: #05556f, secondary: #84869b, tertiary: #849e8a, error: #ba1a1a, neutral: #d7cfa1, neutral-variant: #70787d */
+
+
 html {
-  @include mat.theme((
-    color: (
-      theme-type: light,
-      primary: mat.$green-palette,
-      tertiary: mat.$blue-palette,
-    ),
-    typography: Roboto,
-    density: -2,
+    @include mat.theme((
+        color: (
+            theme-type: light,
+            // primary: mat.$green-palette,
+            // tertiary: mat.$blue-palette,
+        ),
+        typography: mat-typography-level(body-1),
+        density: 0,
+    ));
+
+    @include mat.theme-overrides((
+        primary: #226580,
+        on-primary: #ffffff,
+        primary-container: #bfe9ff,
+        on-primary-container: #001f2a,
+        inverse-primary: #92cfed,
+        primary-fixed: #bfe9ff,
+        primary-fixed-dim: #92cfed,
+        on-primary-fixed: #001f2a,
+        on-primary-fixed-variant: #004d65,
+        secondary: #4c6452,
+        on-secondary: #ffffff,
+        secondary-container: #cee9d3,
+        on-secondary-container: #082012,
+        secondary-fixed: #cee9d3,
+        secondary-fixed-dim: #b2cdb8,
+        on-secondary-fixed: #082012,
+        on-secondary-fixed-variant: #344c3c,
+        tertiary: #655f3a,
+        on-tertiary: #ffffff,
+        tertiary-container: #ece3b4,
+        on-tertiary-container: #1f1c01,
+        tertiary-fixed: #ece3b4,
+        tertiary-fixed-dim: #cfc79a,
+        on-tertiary-fixed: #1f1c01,
+        on-tertiary-fixed-variant: #4c4724,
+        background: #fcf8fa,
+        on-background: #1c1b1d,
+        surface: #fcf8fa,
+        surface-dim: #dcd9db,
+        surface-bright: #fcf8fa,
+        surface-container-lowest: #ffffff,
+        surface-container-low: #f6f3f4,
+        surface-container: #f0edee,
+        surface-container-high: #ebe7e9,
+        surface-container-highest: #e5e1e3,
+        on-surface: #1c1b1d,
+        shadow: #000000,
+        scrim: #000000,
+        surface-tint: #5b5d71,
+        inverse-surface: #313032,
+        inverse-on-surface: #f3f0f1,
+        outline: #77767d,
+        outline-variant: #c7c5cd,
+        neutral: #787678,
+        neutral10: #1c1b1d,
+        error: #ba1a1a,
+        error-container: #ffdad6,
+        on-error: #ffffff,
+        on-error-container: #410002,
+        surface-variant: #e4e1e9,
+        on-surface-variant: #46464c,
+        neutral-variant: #77767d,
+        neutral-variant20: #303036,
+        inverse-secondary: #b2cdb8,
+        inverse-tertiary: #cfc79a,
+    ));
+}
+
+
+
+.dark-mode {
+    @include mat.theme((
+        color: (
+            theme-type: dark,
+            // primary: mat.$cyan-palette,
+            // tertiary: mat.$azure-palette,
+        ),
+        typography: mat-typography-level(body-1),
+        density: 0,
+    ));
+
+  @include mat.theme-overrides((
+    primary: #92cfed,
+    on-primary: #003547,
+    primary-container: #004d65,
+    on-primary-container: #bfe9ff,
+    inverse-primary: #226580,
+    primary-fixed: #bfe9ff,
+    primary-fixed-dim: #92cfed,
+    on-primary-fixed: #001f2a,
+    on-primary-fixed-variant: #004d65,
+    secondary: #b2cdb8,
+    on-secondary: #1e3526,
+    secondary-container: #344c3c,
+    on-secondary-container: #cee9d3,
+    secondary-fixed: #cee9d3,
+    secondary-fixed-dim: #b2cdb8,
+    on-secondary-fixed: #082012,
+    on-secondary-fixed-variant: #344c3c,
+    tertiary: #cfc79a,
+    on-tertiary: #353110,
+    tertiary-container: #4c4724,
+    on-tertiary-container: #ece3b4,
+    tertiary-fixed: #ece3b4,
+    tertiary-fixed-dim: #cfc79a,
+    on-tertiary-fixed: #1f1c01,
+    on-tertiary-fixed-variant: #4c4724,
+    background: #131315,
+    on-background: #e5e1e3,
+    surface: #131315,
+    surface-dim: #131315,
+    surface-bright: #3a393a,
+    surface-container-lowest: #0e0e0f,
+    surface-container-low: #1c1b1d,
+    surface-container: #201f21,
+    surface-container-high: #2a2a2b,
+    surface-container-highest: #353436,
+    on-surface: #e5e1e3,
+    shadow: #000000,
+    scrim: #000000,
+    surface-tint: #c3c5dc,
+    inverse-surface: #e5e1e3,
+    inverse-on-surface: #313032,
+    outline: #919097,
+    outline-variant: #46464c,
+    neutral: #787678,
+    neutral10: #1c1b1d,
+    error: #ffb4ab,
+    error-container: #93000a,
+    on-error: #690005,
+    on-error-container: #ffdad6,
+    surface-variant: #46464c,
+    on-surface-variant: #c7c5cd,
+    neutral-variant: #77767d,
+    neutral-variant20: #303036,
+    inverse-secondary: #4c6452,
+    inverse-tertiary: #655f3a,
   ));
 }
 
+
+
 // html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
-/* You can add global styles to this file, and also import other style files */
-@import 'quill/dist/quill.snow.css';
-
-// a:visited, a {
-//     color: lightgrey;
-// }
-
-// input, select, textarea {
-//     display: block;
-// }
-
-// label {
-//     display: inline-block;
-//     margin-top: 8px;
-//     margin-bottom: 4px;
-// }
-
-body {
-    // background-color: rgb(49, 49, 49);
-    // color: lightgrey;
+body { 
+    // color-scheme:  light dark;
+    font-family: Roboto, "Helvetica Neue", sans-serif; 
     background-color: var(--mat-sys-surface);
     color: var(--mat-sys-on-surface);
     max-width: 900px;
-    margin: auto;
+    margin: 0 auto;
+
+
+    @media (max-width: 899px) {
+        padding: 0 16px;
+    }
 }
 
-// button {
-//     margin: 5px 5px 5px 0;
-// }
+@import 'quill/dist/quill.snow.css';
+
 
 .nofloat::before {
     content: '✖';
@@ -78,3 +201,25 @@ body {
     color: #06c
 }
 
+.create-button {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.grid-container {
+    display: grid;
+    gap: 16px;
+    margin: 16px 0;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+.menu-form-button-group {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+}

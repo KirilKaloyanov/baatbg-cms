@@ -1,0 +1,20 @@
+@use '@angular/material' as mat;
+
+:host {
+    @include mat.slide-toggle-overrides((
+        track-outline-width: 0px,
+        track-width: 41px,
+        track-height: 15px,
+        with-icon-handle-size: 18px,
+        unselected-icon-size: 0,
+        selected-icon-size: 0,
+        selected-handle-color: var(--mat-sys-primary-container),
+        selected-focus-handle-color: var(--mat-sys-inverse-primary)
+    ))
+}
+
+.toggle-container {
+    display: flex;
+    justify-content: flex-end;
+    margin: 8px 8px 0 0;
+}

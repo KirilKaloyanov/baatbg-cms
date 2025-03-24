@@ -1,29 +1,76 @@
 <div *ngIf="menu$">
-  <h2>{{ !isCreate ? "Edit menu" : "Create new menu" }}</h2>
-
   <form [formGroup]="menuForm" (ngSubmit)="saveMenu()">
-    <label for="menu-id"
-      >ID (lowercase, dash-separated ex.: "some-title")</label
-    >
-    <input type="text" id="menu-id" formControlName="id" />
+    <h2>{{ !isCreate ? "Edit menu" : "Create new menu" }}</h2>
 
-    <label for="en">EN</label>
-    <input type="text" id="en" formControlName="en" />
+    <div class="grid-container">
+      <mat-form-field>
+        <mat-label for="menu-id">ID</mat-label>
+        <input matInput type="text" id="menu-id" formControlName="id" />
+        <mat-hint>lowercase, dash-separated ex.: "some-title"</mat-hint>
+        <mat-error *ngIf="menuForm.get('id')?.hasError('required')"
+          >You must enter a value</mat-error
+        >
+        <mat-error *ngIf="menuForm.get('id')?.hasError('pattern')">
+          ID can only contain lowercase letters and dashes (-)!
+        </mat-error>
+      </mat-form-field>
 
-    <label for="bg">BG</label>
-    <input type="text" id="bg" formControlName="bg" />
+      <div></div>
 
-    <label for="path"
-      >Path (should not start with 'en', e.g. 'engagement')</label
-    >
-    <input type="text" id="path" formControlName="path" />
+      <mat-form-field>
+        <mat-label for="en">EN</mat-label>
+        <input matInput type="text" id="en" formControlName="en" />
+        <mat-error>You must enter a value</mat-error>
+      </mat-form-field>
 
-    <label for="position">Position</label>
-    <input type="number" id="position" formControlName="position" />
+      <mat-form-field>
+        <mat-label for="bg">BG</mat-label>
+        <input matInput type="text" id="bg" formControlName="bg" />
+        <mat-error>You must enter a value</mat-error>
+      </mat-form-field>
 
-    <button type="submit" [disabled]="saveButtonDisabled">
-      {{ !saveButtonDisabled ? "Save" : "Wait..." }}
-    </button>
-    <button type="button" (click)="returnToParent()">Cancel</button>
+      <mat-form-field>
+        <mat-label for="path">Path</mat-label>
+        <input matInput type="text" id="path" formControlName="path" />
+        <mat-hint>should not start with 'en', e.g. 'engagement'</mat-hint>
+        <mat-error *ngIf="menuForm.get('path')?.hasError('required')"
+          >You must enter a value</mat-error
+        >
+        <mat-error *ngIf="menuForm.get('path')?.hasError('pattern')">
+          Lowercase letters or dashes only. Do not start with 'en'!
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label for="position">Position</mat-label>
+        <input
+          matInput
+          type="number"
+          id="position"
+          formControlName="position"
+        />
+        <mat-error>You must enter a number greater than 0!</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="menu-form-button-group">
+      <button
+        mat-stroked-button
+        type="button"
+        type="button"
+        (click)="returnToParent()"
+      >
+        Cancel
+      </button>
+
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="saveButtonDisabled"
+      >
+        {{ !saveButtonDisabled ? "Save" : "Wait..." }}
+      </button>
+    </div>
   </form>
 </div>

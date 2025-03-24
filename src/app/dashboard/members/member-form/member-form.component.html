@@ -1,55 +1,142 @@
 <div *ngIf="member$">
+  <form [formGroup]="memberForm" (ngSubmit)="saveMember()">
     <h2>{{ !isCreate ? "Edit member" : "Create new member" }}</h2>
-    <form [formGroup]="memberForm" (ngSubmit)="saveMember()">
-        <label for="member-id">ID*: </label>
-        <input type="text" id="member-id" formControlName="id" />
 
-        <label for="memberType">Member type*: </label>
-        <select id="memberType" formControlName="memberType">
-            <option [value]="type.id" *ngFor="let type of memberTypes">
-                {{type.label.bg}} - {{type.label.en}}
-            </option>
-        </select>
+    <div class="grid-container">
+      <mat-form-field>
+        <mat-label for="member-id">ID: </mat-label>
+        <input matInput type="text" id="member-id" formControlName="id" />
+        <mat-error *ngIf="memberForm.get('id')?.hasError('required')"
+          >You must enter a value</mat-error
+        >
+        <mat-error *ngIf="memberForm.get('id')?.hasError('pattern')">
+          ID can only contain lowercase letters and dashes (-)!
+        </mat-error>
+      </mat-form-field>
 
-        <label for="nameBg">NameBg*: </label>
-        <input type="text" id="nameBg" formControlName="nameBg" />
+      <mat-form-field>
+        <mat-label for="memberType">Member type: </mat-label>
+        <mat-select matInput id="memberType" formControlName="memberType">
+          <mat-option [value]="type.id" *ngFor="let type of memberTypes">
+            {{ type.label.bg }} - {{ type.label.en }}
+          </mat-option>
+        </mat-select>
+        <mat-error>You must enter a value</mat-error>
+      </mat-form-field>
 
-        <label for="nameEn">nameEn*: </label>
-        <input type="text" id="nameEn" formControlName="nameEn" />
-        
-        <label for="descriptionBg">descriptionBg*: </label>
-        <textarea id="descriptionBg" rows="3" formControlName="descriptionBg"></textarea> 
-        
-        
-        <label for="descriptionEn">descriptionEn*: </label>
-        <textarea id="descriptionEn" rows="3" formControlName="descriptionEn"></textarea> 
-        
-        <label for="addressBg">addressBg: </label>
-        <input type="text" id="addressBg" formControlName="addressBg" />
-        
-        <label for="addressEn">addressEn: </label>
-        <input type="text" id="addressEn" formControlName="addressEn" />
-        
-        <label for="website">website: </label>
-        <input type="text" id="website" formControlName="website" />
-        
-        <label for="phone">phone: </label>
-        <input type="text" id="phone" formControlName="phone" />
-        
-        <label for="email">email: </label>
-        <input type="text" id="email" formControlName="email" />
-        
-        <label for="img">img: </label>
-        <img [src]="uploadedImage" *ngIf="uploadedImage" alt="member-logo" style="width: 70px;">
-        <button *ngIf="uploadedImage" (click)="onFileRemove($event)">
-            Remove
-        </button>
-        <input type="file" id="img" (change)="onFileSelect($event)"/>
-        
-        <button type="submit" [disabled]="saveButtonDisabled">
-            {{ !saveButtonDisabled ? "Save" : "Wait..." }}
-        </button>
-        <button type="button" (click)="returnToParent()">Cancel</button>
+      <mat-form-field>
+        <mat-label for="nameBg">NameBg: </mat-label>
+        <input matInput type="text" id="nameBg" formControlName="nameBg" />
+        <mat-error>You must enter a value</mat-error>
+      </mat-form-field>
 
-    </form>
+      <mat-form-field>
+        <mat-label for="nameEn">nameEn*: </mat-label>
+        <input matInput type="text" id="nameEn" formControlName="nameEn" />
+        <mat-error>You must enter a value</mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label for="descriptionBg">descriptionBg: </mat-label>
+        <textarea
+          matInput
+          id="descriptionBg"
+          rows="5"
+          formControlName="descriptionBg"
+        ></textarea>
+        <mat-error>You must enter a value</mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label for="descriptionEn">descriptionEn: </mat-label>
+        <textarea
+          matInput
+          id="descriptionEn"
+          rows="5"
+          formControlName="descriptionEn"
+        ></textarea>
+        <mat-error>You must enter a value</mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label for="addressBg">addressBg: </mat-label>
+        <input
+          matInput
+          type="text"
+          id="addressBg"
+          formControlName="addressBg"
+        />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label for="addressEn">addressEn: </mat-label>
+        <input
+          matInput
+          type="text"
+          id="addressEn"
+          formControlName="addressEn"
+        />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label for="website">website: </mat-label>
+        <input matInput type="text" id="website" formControlName="website" />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label for="phone">phone: </mat-label>
+        <input matInput type="text" id="phone" formControlName="phone" />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label for="email">email: </mat-label>
+        <input matInput type="text" id="email" formControlName="email" />
+      </mat-form-field>
+    </div>
+
+    <div class="menu-form-button-group">
+      <label for="img">Image: </label>
+      <span *ngIf="!uploadedImage && !fileForUpload">No image</span>
+      <img
+        [src]="uploadedImage"
+        *ngIf="uploadedImage"
+        alt="member-logo"
+        style="width: 70px"
+      />
+      <button
+        mat-stroked-button
+        *ngIf="uploadedImage"
+        (click)="onFileRemove($event)"
+      >
+        <mat-icon>delete</mat-icon>Remove
+      </button>
+      <button
+        mat-stroked-button
+        *ngIf="!uploadedImage && !fileForUpload"
+        (click)="fileInput.click()"
+        type="button"
+      >
+        Add Image for Upload
+      </button>
+      <span *ngIf="fileForUpload"
+        >The file '{{ fileForUpload.name }}' will be uploaded on saving.</span
+      >
+      <input
+        #fileInput
+        hidden
+        type="file"
+        id="img"
+        (change)="onFileSelect($event)"
+      />
+    </div>
+
+    <div class="menu-form-button-group">
+      <button mat-stroked-button type="button" (click)="returnToParent()">
+        Cancel
+      </button>
+      <button mat-flat-button type="submit" [disabled]="saveButtonDisabled">
+        {{ !saveButtonDisabled ? "Save" : "Wait..." }}
+      </button>
+    </div>
+  </form>
 </div>

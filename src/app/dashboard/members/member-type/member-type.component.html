@@ -1,28 +1,63 @@
 <h1>Member types</h1>
 
-@for(item of (memberTypes$ | async); track item.id) { 
-    @if(item.id ==itemForEditing?.id) {
-        <ng-container *ngTemplateOutlet="memberTypeForm"></ng-container>
-    } @else {
-        <div (click)="setItemForEditing(item)">{{ item.id }}</div>
-    } 
-}
-<div>-----------------</div>
 @if (itemForEditing?.id == "") {
-    <ng-container *ngTemplateOutlet="memberTypeForm"></ng-container>
-} @else {
-    <button (click)="createItem()">Create new</button>
+
+<ng-container *ngTemplateOutlet="memberTypeForm"></ng-container>
+
+} @else if (!itemForEditing) {
+
+<div class="create-button">
+  <button mat-flat-button (click)="createItem()">
+    <mat-icon>menu_open</mat-icon>Create new item
+  </button>
+</div>
+
+}
+
+<div></div>
+
+@for(item of (memberTypes$ | async); track item.id) {
+<div>
+  @if(item.id==itemForEditing?.id) {
+
+  <ng-container *ngTemplateOutlet="memberTypeForm"></ng-container>
+
+  } @else {
+
+  <button mat-raised-button (click)="setItemForEditing(item)">
+    <mat-icon>edit</mat-icon>{{ item.id }}
+  </button>
+
+  }
+</div>
 }
 
 <ng-template #memberTypeForm>
   <form [formGroup]="mtForm">
-    <label for="id">ID: </label>
-    <input name="id" id="id" formControlName="id" />
-    <label for="bg">Български: </label>
-    <input name="bg" id="bg" formControlName="bg" />
-    <label for="en">English: </label>
-    <input name="en" id="en" formControlName="en" />
-    <button (click)="saveItem()">Save</button>
-    <button (click)="setItemForEditing(null)">Cancel</button>
+    <mat-form-field>
+      <mat-label for="id">ID: </mat-label>
+      <input matInput name="id" id="id" formControlName="id" />
+      <mat-error *ngIf="mtForm.get('id')?.hasError('required')"
+        >You must enter a value</mat-error
+      >
+      <mat-error *ngIf="mtForm.get('id')?.hasError('pattern')">
+        ID can only contain lowercase letters and dashes (-)!
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label for="bg">Български: </mat-label>
+      <input matInput name="bg" id="bg" formControlName="bg" />
+      <mat-error>You must enter a value</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label for="en">English: </mat-label>
+      <input matInput name="en" id="en" formControlName="en" />
+      <mat-error>You must enter a value</mat-error>
+    </mat-form-field>
+
+    <button mat-flat-button (click)="saveItem()">Save</button>
+    <button mat-stroked-button (click)="setItemForEditing(null)">Cancel</button>
   </form>
 </ng-template>

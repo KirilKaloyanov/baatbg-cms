@@ -1,3 +1,8 @@
 <app-toaster></app-toaster>
 <app-loading></app-loading>
+
+<div class="toggle-container">
+    <mat-slide-toggle [checked]="isDarkMode" labelPosition="before" (change)="toggleDarkMode()">Dark Mode</mat-slide-toggle>
+</div>
+
 <router-outlet></router-outlet>

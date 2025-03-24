@@ -1,10 +1,45 @@
 <h1>Members collection</h1>
-<ul>
-  @for(item of (members$ | async); track item.id) {
-  <li>
-    <a [routerLink]="['/dashboard/members/edit', item.id]">{{ item.id }}</a>
-  </li>
-  }
-</ul>
-<button (click)="addNewItem()">Create new member</button>
+<div class="create-button">
+  <button mat-flat-button extended (click)="addNewItem()">
+    <mat-icon>menu_open</mat-icon>Create new member
+  </button>
+</div>
 
+<table
+  mat-table
+  *ngIf="members$ | async as members"
+  [dataSource]="members"
+  class="full-width-table"
+>
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef>ID</th>
+    <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="en">
+    <th mat-header-cell *matHeaderCellDef>EN</th>
+    <td mat-cell *matCellDef="let row">{{ row.name.en }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="bg">
+    <th mat-header-cell *matHeaderCellDef>BG</th>
+    <td mat-cell *matCellDef="let row">{{ row.name.bg }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="memberType">
+    <th mat-header-cell *matHeaderCellDef>Type</th>
+    <td mat-cell *matCellDef="let row">{{ row.typeId }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="action">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let row">
+      <a mat-button [routerLink]="['/dashboard/members/edit', row.id]">
+        <mat-icon>edit</mat-icon>Edit
+      </a>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
