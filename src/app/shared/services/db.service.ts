@@ -137,7 +137,7 @@ export class DbService {
 
   getFileUrl(filepath: string) {
     return this.runInFirebaseContext(() => {
-      const storageRef = ref(this.storage, filepath );
+      const storageRef = ref(this.storage, filepath);
       return from(getDownloadURL(storageRef));
     });
   }

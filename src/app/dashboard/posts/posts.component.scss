@@ -1,0 +1,10 @@
+mat-card {
+    overflow: hidden;
+}
+
+mat-card-header {
+    background-color: var(--mat-sys-secondary);
+    color: var(--mat-sys-on-secondary);
+    height: 30px;
+    margin-bottom: 12px;
+}

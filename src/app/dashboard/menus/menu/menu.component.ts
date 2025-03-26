@@ -11,6 +11,7 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 import { map, Observable, of, Subscription, switchMap } from 'rxjs';
 
@@ -28,6 +29,7 @@ import { LoaderService } from './../../../shared/services/loader.service';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    MatIconModule,
   ],
 })
 export class MenuComponent {

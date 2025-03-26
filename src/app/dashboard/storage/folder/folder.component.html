@@ -1,0 +1,59 @@
+<div class="folder-container">
+  <ul>
+    @for(child of folder.children; track child.path) {
+
+    <li [attr.data-path]="child.path">
+      @if(child.isFolder) {
+
+      <span (click)="toggleFolder(child)">
+        <!-- 📁 {{ child.expanded ? "▼" : "▶" }} -->
+        <a mat-button href="javascript:void(0)">
+          <mat-icon *ngIf="!child.expanded">folder</mat-icon>
+          <mat-icon *ngIf="child.expanded">folder_open</mat-icon>
+          {{ child.name }}
+        </a>
+      </span>
+
+      } @else {
+
+      <div class="item-container">
+        <button mat-button>
+          <!-- <mat-icon>file_copy</mat-icon> -->
+          {{ child.name }}
+        </button>
+        <div class="button-group">
+          <button mat-stroked-button (click)="placeUrlInClipboard(child.path)">
+            <mat-icon>content_copy</mat-icon>
+            Copy URL
+          </button>
+          <button mat-flat-button (click)="deleteItem(child.path)">
+            <mat-icon>delete</mat-icon>
+            Delete
+          </button>
+        </div>
+      </div>
+
+      } @if(child.expanded && child.isFolder) {
+
+      <folder-tree [folder]="child"></folder-tree>
+
+      }
+    </li>
+
+    }
+    <li>
+      <button mat-stroked-button (click)="fileInput.click()">
+        <mat-icon>upload_file</mat-icon>
+        Upload PDF
+      </button>
+    </li>
+  </ul>
+
+  <input
+    hidden
+    type="file"
+    accept="application/pdf"
+    #fileInput
+    (change)="fileUpload($event)"
+  />
+</div>

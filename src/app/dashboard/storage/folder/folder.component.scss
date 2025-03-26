@@ -1,0 +1,30 @@
+ul {
+    list-style-type: none;
+
+    li {
+        margin: 10px;
+    }
+}
+
+.folder-container {
+    min-width: 600px;
+    margin-bottom: 9px;
+}
+
+.item-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.item-container button:first-child {
+    flex-shrink: 1;
+}
+
+.button-group {
+    display: flex;
+    flex-shrink: 0;
+    justify-content: flex-end;
+    button {
+        margin: 0 6px;
+    }
+}

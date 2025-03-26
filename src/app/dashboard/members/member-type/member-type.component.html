@@ -8,7 +8,7 @@
 
 <div class="create-button">
   <button mat-flat-button (click)="createItem()">
-    <mat-icon>menu_open</mat-icon>Create new item
+    <mat-icon>menu_open</mat-icon>Create Member Type
   </button>
 </div>
 
@@ -24,7 +24,7 @@
 
   } @else {
 
-  <button mat-raised-button (click)="setItemForEditing(item)">
+  <button mat-button (click)="setItemForEditing(item)">
     <mat-icon>edit</mat-icon>{{ item.id }}
   </button>
 

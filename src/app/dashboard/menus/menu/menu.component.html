@@ -32,7 +32,6 @@
       <mat-form-field>
         <mat-label for="path">Path</mat-label>
         <input matInput type="text" id="path" formControlName="path" />
-        <mat-hint>should not start with 'en', e.g. 'engagement'</mat-hint>
         <mat-error *ngIf="menuForm.get('path')?.hasError('required')"
           >You must enter a value</mat-error
         >
@@ -69,6 +68,7 @@
         type="submit"
         [disabled]="saveButtonDisabled"
       >
+        <mat-icon>save_as</mat-icon>
         {{ !saveButtonDisabled ? "Save" : "Wait..." }}
       </button>
     </div>

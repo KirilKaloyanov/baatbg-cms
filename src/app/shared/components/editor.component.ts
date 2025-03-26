@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, forwardRef, Input } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  forwardRef,
+  inject,
+  Input,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { DbService } from '@shared/services/db.service';
 import { StorageService } from '@shared/services/storage.service';
@@ -9,6 +15,11 @@ import QuillImageDropAndPaste, {
 } from 'quill-image-drop-and-paste';
 import Toolbar from 'quill/modules/toolbar';
 import { ImageBlot } from '@shared/interfaces/editor.imageBlot';
+
+import { combineLatest, from, map, of, switchMap, tap, throwError } from 'rxjs';
+
+import { MatDialog } from '@angular/material/dialog';
+import { ImageModal } from './modals/image-modal.component';
 
 @Component({
   selector: 'text-editor',
@@ -37,6 +48,8 @@ export class TextEditorComponent
   private onChange = (value: string) => {};
   private onTouched = () => {};
 
+  private dialog = inject(MatDialog);
+
   private isDisabled: boolean = false;
 
   public initQuilEditor() {
@@ -48,7 +61,7 @@ export class TextEditorComponent
       modules: {
         toolbar: [
           ['bold', 'italic', 'underline', 'strike'], // toggled buttons
-          ['blockquote', 'link', 'video'],
+          ['blockquote', 'link'],
 
           [{ header: 1 }, { header: 2 }], // custom button values
           [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
@@ -61,7 +74,7 @@ export class TextEditorComponent
           [{ font: [] }],
           [{ align: [] }],
 
-          ['color', 'background', 'clean'],
+          ['clean', 'color', 'background'],
           [
             'image',
             `${this.elementId}-nofloat`,
@@ -172,46 +185,96 @@ export class TextEditorComponent
   }
 
   uploadImage(dataUrl: string, type: string, imageData: QuillImageData) {
-    const size = Number(
-      prompt(
-        'Enter maximum length of any side. Upload will start automatically.'
-      )
-    );
-    //modal service TODO + prompt for alt text for the image
-    if (size) {
-      imageData
-        .minify({
-          maxHeight: size,
-          maxWidth: size,
-          quality: 0.7,
-        })
-        .then((miniImageData: any) => {
-          const fileToUpload = miniImageData.toFile();
-          if (fileToUpload) {
-            let filepath = prompt(
-              'Enter folder name to store the image, ex. leonardo-project or folder/subfolder/leonardo-project (Optional)'
-            );
-            filepath = filepath ? filepath + '/' : '';
-            this.storage
-              .uploadFile(fileToUpload, 'posts/' + filepath)
-              .subscribe({
-                complete: () => {
-                  this.dbService
-                    .getFileUrl('posts/' + filepath + fileToUpload.name)
-                    .subscribe((url) => {
-                      let index = (this.quill.getSelection() || {}).index;
-                      if (index == undefined || index < 0)
-                        index = this.quill.getLength();
-                      this.quill.insertEmbed(index, 'image', {
-                        src: url,
-                        alt: 'my alt image',
-                      });
-                    });
-                },
-              });
+    this.dialog
+      .open(ImageModal, { data: imageData })
+      .afterClosed()
+      .pipe(
+        switchMap((userInput) => {
+          if (!userInput)
+            return throwError(() => new Error('Operation aborted'));
+          return from(
+            imageData.minify({
+              maxHeight: userInput.size,
+              maxWidth: userInput.size,
+              quality: 0.7,
+            })
+          ).pipe(map((miniImage) => ({ miniImage, userInput })));
+        }),
+        switchMap((input: any) => {
+          const miniImage: any = input.miniImage;
+          let filePath = input.userInput.path;
+          const fileToUpload = miniImage.toFile();
+
+          if (!fileToUpload) {
+            return throwError(() => new Error('File creation failed'));
           }
+
+          filePath = filePath ? filePath + '/' : '';
+          return this.storage
+            .uploadFile(fileToUpload, 'posts/' + filePath)
+            .pipe(
+              switchMap((value) => {
+                if (value !== 'uploaded') return of(null);
+                return this.dbService
+                  .getFileUrl('posts/' + filePath + fileToUpload.name)
+                  .pipe(map((src) => ({ src, alt: input.userInput.alt })));
+              })
+            );
+        })
+      )
+      .subscribe((result: any) => {
+        if (!result) return;
+        const { src, alt } = result;
+        let index = (this.quill.getSelection() || {}).index;
+        if (index == undefined || index < 0) index = this.quill.getLength();
+        this.quill.insertEmbed(index, 'image', {
+          src,
+          alt,
         });
-    }
+      });
+
+    // const size = Number(
+    //   /// TODO modal with validation for max value of width/height
+
+    //   prompt(
+    //     'Enter maximum length of any side. Upload will start automatically.'
+    //   )
+    // );
+    // //modal service TODO + prompt for alt text for the image
+    // if (size) {
+    //   imageData
+    //     .minify({
+    //       maxHeight: size,
+    //       maxWidth: size,
+    //       quality: 0.7,
+    //     })
+    //     .then((miniImageData: any) => {
+    //       const fileToUpload = miniImageData.toFile();
+    //       if (fileToUpload) {
+    //         let filepath = prompt(
+    //           'Enter folder name to store the image, ex. leonardo-project or folder/subfolder/leonardo-project (Optional)'
+    //         );
+    //         filepath = filepath ? filepath + '/' : '';
+    //         this.storage
+    //           .uploadFile(fileToUpload, 'posts/' + filepath)
+    //           .subscribe({
+    //             complete: () => {
+    //               this.dbService
+    //                 .getFileUrl('posts/' + filepath + fileToUpload.name)
+    //                 .subscribe((url) => {
+    //                   let index = (this.quill.getSelection() || {}).index;
+    //                   if (index == undefined || index < 0)
+    //                     index = this.quill.getLength();
+    //                   this.quill.insertEmbed(index, 'image', {
+    //                     src: url,
+    //                     alt: 'my alt image',
+    //                   });
+    //                 });
+    //             },
+    //           });
+    //       }
+    //     });
+    // }
   }
 
   // ControlValueAccessor methods

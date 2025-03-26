@@ -176,7 +176,9 @@ export class MemberFormComponent {
     if (this.uploadedImage) payload.img = this.uploadedImageName;
     else if (this.fileForUpload) payload.img = this.fileForUpload.name;
     else payload.img = '';
-
+    ////////////////////////
+    ///TODO  check file size using custom validator on the fileForUpload
+    ////////////////////////
     this.dbService.saveDocument('members', id, payload).subscribe({
       complete: () => {
         this.toaster.showSuccess('Successfully saved member');

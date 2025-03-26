@@ -1,32 +1,41 @@
+import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
-import { DbService } from '../../../shared/services/db.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import {
-  catchError,
-  Observable,
-  of,
-  switchMap,
-  throwError,
-  map,
-  tap,
-  Subscription,
-} from 'rxjs';
-import { Post } from './../post.model';
 import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+
+import { Observable, of, switchMap, tap, Subscription } from 'rxjs';
+
+import { DbService } from '../../../shared/services/db.service';
 import { ToasterService } from '../../../shared/services/toaster.service';
-import { CommonModule } from '@angular/common';
 import { TextEditorComponent } from '../../../shared/components/editor.component';
+import { Post } from './../post.model';
 import { Menu } from '../../menus/menu.model';
 
 @Component({
   selector: 'edit-post',
   templateUrl: 'post.component.html',
-  imports: [CommonModule, ReactiveFormsModule, TextEditorComponent],
+  styleUrl: 'post.component.scss',
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    TextEditorComponent,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatIconModule,
+  ],
 })
 export class PostComponent {
   post$!: Observable<Post | string>;
@@ -37,13 +46,19 @@ export class PostComponent {
   routeDataSubscription!: Subscription;
 
   postForm: FormGroup = new FormGroup({
-    id: new FormControl('', Validators.required),
+    id: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^[a-z-]+$/),
+    ]),
     menuPath: new FormControl('', Validators.required),
-    subMenuPath: new FormControl('', Validators.required),
+    subMenuPath: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^[a-z-]+$/),
+    ]),
     headingBg: new FormControl('', Validators.required),
     headingEn: new FormControl('', Validators.required),
-    textBg: new FormControl('', Validators.required),
-    textEn: new FormControl('', Validators.required),
+    textBg: new FormControl(''),
+    textEn: new FormControl(''),
   });
 
   constructor(
@@ -105,6 +120,7 @@ export class PostComponent {
   }
 
   savePost() {
+    if (this.postForm.invalid) return;
     const payload = {
       menuPath: this.postForm.get('menuPath')?.value,
       subMenuPath: this.postForm.get('subMenuPath')?.value,

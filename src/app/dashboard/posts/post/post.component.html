@@ -1,37 +1,83 @@
 <div *ngIf="post$ | async as post">
-  <h2>{{ !isCreate ? "Edit post" : "Create new post" }}</h2>
-
   <form [formGroup]="postForm" (ngSubmit)="savePost()">
-    <label for="post-id">ID</label>
-    <input type="text" id="post-id" formControlName="id" />
+    <h2>{{ !isCreate ? "Edit post" : "Create new post" }}</h2>
+    <div class="grid-container">
+      <div class="button-group">
+        <button mat-stroked-button type="button" (click)="returnToParent()">
+          Cancel
+        </button>
+        <button mat-flat-button type="submit" [disabled]="saveButtonDisabled">
+          <mat-icon>save_as</mat-icon>
+          {{ !saveButtonDisabled ? "Save" : "Wait..." }}
+        </button>
+      </div>
 
-    <label for="menuPath">menu-path</label>
-    <select id="menuPath" formControlName="menuPath">
-      <option [value]="menu.path" *ngFor="let menu of menuList">
-        {{ menu.path }}
-      </option>
-    </select>
+      <mat-form-field>
+        <mat-label for="post-id">ID</mat-label>
+        <input matInput type="text" id="post-id" formControlName="id" />
+        <mat-error *ngIf="postForm.get('id')?.hasError('required')"
+          >You must enter a value</mat-error
+        >
+        <mat-error *ngIf="postForm.get('id')?.hasError('pattern')">
+          ID can only contain lowercase letters and dashes (-)!
+        </mat-error>
+      </mat-form-field>
 
-    <label for="subMenuPath">submenu-path</label>
-    <input type="text" id="subMenuPath" formControlName="subMenuPath" />
+      <mat-form-field>
+        <mat-label for="menuPath">menu-path</mat-label>
+        <mat-select matInput id="menuPath" formControlName="menuPath">
+          <mat-option [value]="menu.path" *ngFor="let menu of menuList">
+            {{ menu.path }}
+          </mat-option>
+        </mat-select>
+        <mat-error>You must enter a value</mat-error>
+      </mat-form-field>
 
-    <label for="headingBg">BG</label>
-    <input type="text" id="headingBg" formControlName="headingBg" />
+      <mat-form-field>
+        <mat-label for="subMenuPath">submenu-path</mat-label>
+        <input
+          matInput
+          type="text"
+          id="subMenuPath"
+          formControlName="subMenuPath"
+        />
+        <mat-error *ngIf="postForm.get('subMenuPath')?.hasError('required')"
+          >You must enter a value</mat-error
+        >
+        <mat-error *ngIf="postForm.get('subMenuPath')?.hasError('pattern')">
+          Submenu-path can only contain lowercase letters and dashes (-)!
+        </mat-error>
+      </mat-form-field>
 
-    <label for="headingEn">EN</label>
-    <input type="text" id="headingEn" formControlName="headingEn" />
+      <mat-form-field>
+        <mat-label for="headingBg">BG</mat-label>
+        <input
+          matInput
+          type="text"
+          id="headingBg"
+          formControlName="headingBg"
+        />
+        <mat-error>You must enter a value</mat-error>
+      </mat-form-field>
 
-    <label for="textBg">Съдържание</label>
+      <mat-form-field>
+        <mat-label for="headingEn">EN</mat-label>
+        <input
+          matInput
+          type="text"
+          id="headingEn"
+          formControlName="headingEn"
+        />
+        <mat-error>You must enter a value</mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-label for="textBg">Съдържание</mat-label>
     <text-editor elementId="contentBg" formControlName="textBg"></text-editor>
     <br />
 
-    <label for="textEn">Content</label>
+    <mat-label for="textEn">Content</mat-label>
     <text-editor elementId="contentEn" formControlName="textEn"></text-editor>
     <br />
-
-    <button type="submit" [disabled]="saveButtonDisabled">
-      {{ !saveButtonDisabled ? "Save" : "Wait..." }}
-    </button>
-    <button type="button" (click)="returnToParent()">Cancel</button>
   </form>
 </div>

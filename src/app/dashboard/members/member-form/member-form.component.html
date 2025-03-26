@@ -96,7 +96,7 @@
 
     <div class="menu-form-button-group">
       <label for="img">Image: </label>
-      <span *ngIf="!uploadedImage && !fileForUpload">No image</span>
+      <span *ngIf="!uploadedImage && !fileForUpload">No image, yet...</span>
       <img
         [src]="uploadedImage"
         *ngIf="uploadedImage"
@@ -116,6 +116,7 @@
         (click)="fileInput.click()"
         type="button"
       >
+        <mat-icon>image</mat-icon>
         Add Image for Upload
       </button>
       <span *ngIf="fileForUpload"
@@ -135,6 +136,7 @@
         Cancel
       </button>
       <button mat-flat-button type="submit" [disabled]="saveButtonDisabled">
+        <mat-icon>save_as</mat-icon>
         {{ !saveButtonDisabled ? "Save" : "Wait..." }}
       </button>
     </div>

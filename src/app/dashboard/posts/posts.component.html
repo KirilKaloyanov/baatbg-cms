@@ -1,12 +1,31 @@
 <h1>Posts collection</h1>
-<div>
-    @for(item of (groupedPosts$ | async); track item[0].menuPath) {
+
+<div class="create-button">
+  <button mat-flat-button (click)="addNewItem()">
+    <mat-icon>post_add</mat-icon>Create Post
+  </button>
+</div>
+
+<div class="grid-container">
+  <!-- <mat-grid-list cols="2" rowHeight="2:1"> -->
+  @for(item of (groupedPosts$ | async); track item[0].menuPath) {
+  <!-- <mat-grid-tile> -->
+  <mat-card>
+    <mat-card-header>
       <div>{{ item[0].menuPath }}</div>
-    <ul>
+    </mat-card-header>
+
+    <mat-card-content>
       @for(post of (item); track post.id) {
-        <li><a [routerLink]="['/dashboard/posts/edit', post.id]"> {{ post.subMenuPath }}</a> </li>
-        }
-    </ul>
+      <div>
+        <a mat-button [routerLink]="['/dashboard/posts/edit', post.id]">
+          <mat-icon>edit</mat-icon>{{ post.subMenuPath }}
+        </a>
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+  <!-- </mat-grid-tile> -->
   }
-  <button (click)="addNewItem()">Create new post</button>
+  <!-- </mat-grid-list> -->
 </div>

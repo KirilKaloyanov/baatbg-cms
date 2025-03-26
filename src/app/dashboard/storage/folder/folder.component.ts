@@ -1,64 +1,30 @@
 import { CommonModule } from '@angular/common';
+import { Component, inject, Input } from '@angular/core';
+
 import { Clipboard } from '@angular/cdk/clipboard';
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  Output,
-  TemplateRef,
-} from '@angular/core';
-import { FileItem } from '@shared/interfaces/fileItem.model';
-import { DbService } from '@shared/services/db.service';
+
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
+
 import { StorageService } from '@shared/services/storage.service';
-import { ToasterComponent } from '@shared/components/toaster.component';
 import { ToasterService } from '@shared/services/toaster.service';
+import { DbService } from '@shared/services/db.service';
+import { FileItem } from '@shared/interfaces/fileItem.model';
+import { ConfirmModal } from '@shared/components/modals/confirm-modal.component';
+import { catchError, map, switchMap, of, throwError, filter, tap } from 'rxjs';
+import { AlertModal } from '@shared/components/modals/alert-modal.component';
+import { InputModal } from '@shared/components/modals/input-modal.component';
 
 @Component({
   selector: 'folder-tree',
-  template: `
-    <div>Upload file in {{ folder.name }} folder:</div>
-    <input
-      type="file"
-      accept="application/pdf"
-      #fileInput
-      (change)="fileUpload($event)"
-    />
-    <ul>
-      @for(child of folder.children; track child.path) {
-
-      <li [attr.data-path]="child.path">
-        @if(child.isFolder) {
-
-        <span (click)="toggleFolder(child)">
-          📁 {{ child.expanded ? '▼' : '▶' }}
-          <a href="javascript:void(0)">{{ child.name }}</a>
-        </span>
-
-        } @else {
-
-        <span> {{ child.name }} </span>
-        <button (click)="placeUrlInClipboard(child.path)">Copy URL</button>
-        <button (click)="deleteItem(child.path)">Delete</button>
-
-        } @if(child.expanded && child.isFolder) {
-
-        <folder-tree
-          [folder]="child"
-        ></folder-tree>
-
-        }
-      </li>
-
-      }
-    </ul>
-  `,
-  styles: [],
-  imports: [CommonModule],
+  templateUrl: 'folder.component.html',
+  styleUrl: 'folder.component.scss',
+  imports: [CommonModule, MatButtonModule, MatIconModule],
 })
 export class FolderTreeComponent {
   @Input() folder!: FileItem;
-  
+
   constructor(
     private dbService: DbService,
     private storage: StorageService,
@@ -66,9 +32,7 @@ export class FolderTreeComponent {
     private clipboard: Clipboard
   ) {}
 
-  // ngOnInit() {
-  //   console.log(this.folder);
-  // }
+  readonly dialog = inject(MatDialog);
 
   toggleFolder(folder: FileItem) {
     if (!folder.isFolder) return;
@@ -82,50 +46,109 @@ export class FolderTreeComponent {
   }
 
   deleteItem(path: string) {
-    this.dbService.deleteFolder(path).subscribe(()=> {
-      this.updateFilesAndFolders();
-  })
+    const dialogRef = this.dialog.open(ConfirmModal);
+    dialogRef
+      .afterClosed()
+      .pipe(
+        switchMap((value) => {
+          if (value) {
+            return this.dbService.deleteFolder(path).pipe(
+              map(() => true),
+              catchError((err) => throwError(() => err))
+            );
+          }
+          return of(false);
+        })
+      )
+      .subscribe({
+        next: (result) => {
+          if (result) {
+            this.updateFilesAndFolders();
+            this.toaster.showSuccess('Successfully deleted document');
+          } else {
+            this.toaster.showError('Operation aborted!');
+          }
+        },
+        error: (err) => {
+          this.toaster.showError(err.message);
+        },
+      });
   }
 
   fileUpload(e: Event) {
-    const fileInput = e.target as HTMLInputElement;
-    const files = fileInput.files;
+    const fileInputElement = e.target as HTMLInputElement;
+    const files = fileInputElement.files;
 
     if (!files || files.length < 1) return;
     if (files[0].size > 30 * 1000 * 1000) {
-      alert('Choose file less than 3MB.');
-      fileInput.value = '';
+      this.dialog.open(AlertModal, {
+        minWidth: '600px',
+        data: 'Choose file less than 30MB!',
+      });
+      fileInputElement.value = '';
       return;
     }
+
     let filePath = this.folder.path;
     if (filePath.length > 0) filePath += '/';
 
-    const subFolder = prompt(
-      'Enter folders path, e.g. folder or folder/subfolder'
-    );
-    if (subFolder) filePath += subFolder + '/';
-
-    const isConfirmed = confirm(
-      'Hey there, are you sure you want to upload ' + filePath + files[0].name
-    );
-    if (isConfirmed) {
-      this.storage.uploadFile(files[0], filePath ? filePath : '').subscribe({
+    this.dialog
+      .open(InputModal, {
+        data: 'Enter folders path, e.g. folder or folder/subfolder (optional)',
+      })
+      .afterClosed()
+      .pipe(
+        switchMap((value) => {
+          if (typeof value == 'string') {
+            if (value) filePath += value + '/';
+            return this.storage.uploadFile(files[0], filePath ? filePath : '');
+          } else {
+            fileInputElement.value = '';
+            this.toaster.showError('Operation aborted!');
+            return of(null);
+          }
+        })
+      )
+      .subscribe({
+        error: (err) => {
+          fileInputElement.value = '';
+        },
         complete: () => {
-          fileInput.value = '';
+          fileInputElement.value = '';
           this.updateFilesAndFolders();
         },
       });
-    } else {
-      fileInput.value = '';
-    }
+
+    // const subFolder = prompt(
+    //   'Enter folders path, e.g. folder or folder/subfolder'
+    // );
+    // if (subFolder) filePath += subFolder + '/';
+
+    // const isConfirmed = confirm(
+    //   'Hey there, are you sure you want to upload ' + filePath + files[0].name
+    // );
+
+    // if (isConfirmed) {
+    //   this.storage.uploadFile(files[0], filePath ? filePath : '').subscribe({
+    //     error: (err) => {
+    //       fileInputElement.value = '';
+    //     },
+    //     complete: () => {
+    //       fileInputElement.value = '';
+    //       this.updateFilesAndFolders();
+    //     },
+    //   });
+    // } else {
+    //   fileInputElement.value = '';
+    // }
   }
 
   updateFilesAndFolders() {
     this.dbService
       .listAllFilesAndFloders(this.folder.path)
       .subscribe((items) => {
-        	this.folder.children = items;
-    });
+        this.folder.children = items;
+      });
   }
 
   placeUrlInClipboard(path: any) {
