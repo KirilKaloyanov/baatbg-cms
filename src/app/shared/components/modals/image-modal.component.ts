@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject, model, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, inject, model, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatSliderModule } from '@angular/material/slider';
@@ -24,11 +24,11 @@ import { MatInputModule } from '@angular/material/input';
       width: 90%
     }
     .image-container {
-        max-width: 450px;
-        margin-bottom: 12px;
-    }
-    img {
-        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 12px;
     }
   `,
   imports: [
@@ -45,13 +45,13 @@ export class ImageModal {
   @ViewChild('imageRef') imageElement!: ElementRef<HTMLImageElement>;
   dialogRef = inject(MatDialogRef<ImageModal>);
   data = inject(MAT_DIALOG_DATA);
-  imageSize = model(900);
+  imageSize = model(600);
   folderPath = model('');
   altText = model('');
 
-  currentStyle = {
-    width: `${this.imageSize}px`,
-  };
+  imageStyle = computed(() => ({
+    'width': `${this.imageSize()}px`
+  }))
 
   onConfirm() {
     if (!this.altText()) return;
@@ -61,11 +61,6 @@ export class ImageModal {
       path: this.folderPath(),
       alt: this.altText(),
     };
-  }
-
-  onImageLoad() {
-    const el = this.imageElement.nativeElement;
-    console.log(el.naturalHeight, el.naturalWidth);
   }
 
   onNoClick() {

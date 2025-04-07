@@ -100,6 +100,8 @@ export class DbService {
     });
   }
 
+  //describe docs firestore
+
   getDocument<T>(collectionName: string, docName: string) {
     return this.runInFirebaseContext(() => {
       console.log('db service get doc', docName);

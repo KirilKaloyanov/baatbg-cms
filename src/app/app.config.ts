@@ -7,6 +7,8 @@ import { provideStorage, getStorage } from '@angular/fire/storage'
 import { Clipboard } from '@angular/cdk/clipboard'
 import { provideQuillConfig } from "ngx-quill/config";
 
+import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
+
 import { routes } from './app.routes';
 import { environment } from '../environments/environment.development';
 import { LogLevel, setLogLevel } from '@angular/fire';
@@ -31,6 +33,7 @@ export const appConfig: ApplicationConfig = {
       theme: 'snow',
       sanitize: true
     }),
-    Clipboard
+    Clipboard,
+    {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {autoFocus: 'first-header'}}
   ]
 };

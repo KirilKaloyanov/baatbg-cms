@@ -31,7 +31,7 @@ export class StorageService {
         }
       }),
       catchError((error) => {
-        this.toaster.showError('Error uploading document', error.message);
+        this.toaster.showError('Error uploading document ' + error.message);
         this.loader.hideProgress();
         return throwError(() => error);
       })

@@ -24,6 +24,11 @@ html {
         active-indicator-color: var(--mat-sys-secondary),
     ));
 
+    @include mat.dialog-overrides((
+        container-max-width: 1624px
+        //max-height
+    ));
+
     @include mat.theme-overrides((
         primary: #226580,
         on-primary: #ffffff,
