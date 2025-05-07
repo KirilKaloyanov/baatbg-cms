@@ -1,6 +1,7 @@
 
 export interface Post {
   id: string;
+  linkVideo: string;
   menuPath: string;
   subMenuPath: string;
   heading: {
@@ -15,6 +16,7 @@ export interface Post {
 
 export interface UIPost {
   id: string;
+  linkVideo: string;
   menuPath: string;
   subMenuPath: string;
   headingBg: string;

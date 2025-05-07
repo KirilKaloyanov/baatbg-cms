@@ -50,6 +50,7 @@ export class PostComponent {
       Validators.required,
       Validators.pattern(/^[a-z-]+$/),
     ]),
+    linkVideo: new FormControl(''),
     menuPath: new FormControl('', Validators.required),
     subMenuPath: new FormControl('', [
       Validators.required,
@@ -84,6 +85,7 @@ export class PostComponent {
               if (dbPost) {
                 const uiPost = {
                   id: dbPost.id,
+                  linkVideo: dbPost.linkVideo,
                   menuPath: dbPost.menuPath,
                   subMenuPath: dbPost.subMenuPath,
                   headingBg: dbPost.heading.bg,
@@ -122,6 +124,7 @@ export class PostComponent {
   savePost() {
     if (this.postForm.invalid) return;
     const payload = {
+      linkVideo: this.postForm.get('linkVideo')?.value  || '',
       menuPath: this.postForm.get('menuPath')?.value,
       subMenuPath: this.postForm.get('subMenuPath')?.value,
       heading: {
