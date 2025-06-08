@@ -40,7 +40,7 @@ export class StorageComponent {
   }
 
   loadItems() {
-    this.dbService.listAllFilesAndFloders('').subscribe((items) => {
+    this.dbService.listAllFilesAndFoldersWithTime('').subscribe((items) => {
       this.fileTree.update((fileTree) => ({ ...fileTree, children: items }));
     });
   }

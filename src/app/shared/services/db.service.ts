@@ -20,9 +20,12 @@ import {
   listAll,
   uploadBytesResumable,
   deleteObject,
+  getMetadata,
+  FullMetadata,
 } from '@angular/fire/storage';
 import {
   catchError,
+  forkJoin,
   from,
   map,
   Observable,
@@ -144,27 +147,67 @@ export class DbService {
     });
   }
 
-  listAllFilesAndFloders(path: string = '') {
+  // listAllFilesAndFolders(path: string = '') {
+  //   return this.runInFirebaseContext<FileItem[]>(() => {
+  //     const storageRef = ref(this.storage, path);
+
+  //     return from(listAll(storageRef)).pipe(
+  //       map((res) => {
+  //         return [
+  //           ...res.prefixes.map((folderRef) => ({
+  //             name: folderRef.name,
+  //             path: folderRef.fullPath,
+  //             isFolder: true,
+  //             expanded: false,
+  //             children: undefined,
+  //           })),
+  //           ...res.items.map((fileRef) => ({
+  //             name: fileRef.name,
+  //             path: fileRef.fullPath,
+  //             isFolder: fileRef.fullPath.endsWith('/'),
+  //             expanded: false,
+  //           })),
+  //         ] as FileItem[];
+  //       })
+  //     );
+  //   });
+  // }
+
+  listAllFilesAndFoldersWithTime(path: string = '') {
     return this.runInFirebaseContext<FileItem[]>(() => {
       const storageRef = ref(this.storage, path);
 
       return from(listAll(storageRef)).pipe(
-        map((res) => {
-          return [
-            ...res.prefixes.map((folderRef) => ({
-              name: folderRef.name,
-              path: folderRef.fullPath,
-              isFolder: true,
-              expanded: false,
-              children: undefined,
-            })),
-            ...res.items.map((fileRef) => ({
-              name: fileRef.name,
-              path: fileRef.fullPath,
-              isFolder: fileRef.fullPath.endsWith('/'),
-              expanded: false,
-            })),
-          ] as FileItem[];
+        switchMap((res) => {
+          const folderItems: FileItem[] = res.prefixes.map((folderRef) => ({
+            name: folderRef.name,
+            path: folderRef.fullPath,
+            isFolder: true,
+            expanded: false,
+            children: undefined,
+          }));
+          
+          if (res.items.length === 0) {
+            return of(folderItems);
+          }
+
+          const fileMetadata$ = res.items.map((fileRef) =>
+            this.runInFirebaseContext<FullMetadata>(() =>
+              from(getMetadata(fileRef))
+            ).pipe(
+              map((metadata) => ({
+                name: fileRef.name,
+                path: fileRef.fullPath,
+                isFolder: false,
+                expanded: false,
+                updated: metadata.updated,
+              }))
+            )
+          );
+
+          return forkJoin(fileMetadata$).pipe(
+            map((fileItems) => [...folderItems, ...fileItems] as FileItem[])
+          );
         })
       );
     });

@@ -199,7 +199,7 @@ export class TextEditorComponent
           if (!userInput)
             return throwError(() => new Error('Operation cancelled'));
 
-          if (!userInput.altText)
+          if (!userInput.alt)
             return throwError(() => new Error('Alt text was not provided'));
           return from(
             imageData.minify({

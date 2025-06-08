@@ -34,7 +34,7 @@ export class ImageBlot extends BlockEmbed {
       if (name == 'float') {
         if (value) {
           this['domNode'].style.float = value;
-          this['domNode'].style.margin = '12px';
+          this['domNode'].style.margin =  value == "left" ? '12px 12px 12px 0' : '12px 0 12px 12px';
         } else {
           this['domNode'].style.removeProperty('float');
           this['domNode'].style.margin = '0';

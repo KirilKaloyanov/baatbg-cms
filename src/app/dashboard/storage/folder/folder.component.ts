@@ -39,7 +39,8 @@ export class FolderTreeComponent {
     folder.expanded = !folder.expanded;
 
     if (folder.expanded && !folder.children) {
-      this.dbService.listAllFilesAndFloders(folder.path).subscribe((items) => {
+      this.dbService.listAllFilesAndFoldersWithTime(folder.path).subscribe((items) => {
+        console.log(items)
         folder.children = items;
       });
     }
@@ -145,7 +146,7 @@ export class FolderTreeComponent {
 
   updateFilesAndFolders() {
     this.dbService
-      .listAllFilesAndFloders(this.folder.path)
+      .listAllFilesAndFoldersWithTime(this.folder.path)
       .subscribe((items) => {
         this.folder.children = items;
       });

@@ -17,10 +17,13 @@
       } @else {
 
       <div class="item-container">
-        <button mat-button>
-          <!-- <mat-icon>file_copy</mat-icon> -->
-          {{ child.name }}
-        </button>
+        <div>
+          <button mat-button>{{ child.updated | date }}</button>
+          <button mat-button>
+            <!-- <mat-icon>file_copy</mat-icon> -->
+            {{ child.name }}
+          </button>
+        </div>
         <div class="button-group">
           <button mat-stroked-button (click)="placeUrlInClipboard(child.path)">
             <mat-icon>content_copy</mat-icon>

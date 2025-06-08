@@ -44,14 +44,13 @@ export class PostComponent {
   isCreate!: boolean;
 
   routeDataSubscription!: Subscription;
+  subMenuPathValueChangeSusbsription: Subscription | null = null;
 
   postForm: FormGroup = new FormGroup({
-    id: new FormControl('', [
-      Validators.required,
-      Validators.pattern(/^[a-z-]+$/),
-    ]),
+    id: new FormControl(''),
     linkVideo: new FormControl(''),
     menuPath: new FormControl('', Validators.required),
+    position: new FormControl(0, Validators.required),
     subMenuPath: new FormControl('', [
       Validators.required,
       Validators.pattern(/^[a-z-]+$/),
@@ -87,6 +86,7 @@ export class PostComponent {
                   id: dbPost.id,
                   linkVideo: dbPost.linkVideo,
                   menuPath: dbPost.menuPath,
+                  position: dbPost.position,
                   subMenuPath: dbPost.subMenuPath,
                   headingBg: dbPost.heading.bg,
                   headingEn: dbPost.heading.en,
@@ -104,9 +104,21 @@ export class PostComponent {
   }
 
   ngOnInit() {
-    if (!this.isCreate) {
-      this.postForm.get('id')?.disable();
+    const idField = this.postForm.get('id');
+    idField?.disable();
+
+    const subMenuPathField = this.postForm.get('subMenuPath');
+
+    if (!this.isCreate && subMenuPathField) {
+      subMenuPathField.disable();
     }
+
+    this.subMenuPathValueChangeSusbsription =
+      subMenuPathField?.valueChanges.subscribe((value) => {
+        if (subMenuPathField.valid) {
+          idField?.setValue(value);
+        }
+      }) ?? null;
   }
 
   ngAfterViewInit() {
@@ -124,8 +136,9 @@ export class PostComponent {
   savePost() {
     if (this.postForm.invalid) return;
     const payload = {
-      linkVideo: this.postForm.get('linkVideo')?.value  || '',
+      linkVideo: this.postForm.get('linkVideo')?.value || '',
       menuPath: this.postForm.get('menuPath')?.value,
+      position: this.postForm.get('position')?.value,
       subMenuPath: this.postForm.get('subMenuPath')?.value,
       heading: {
         bg: this.postForm.get('headingBg')?.value,
@@ -158,5 +171,6 @@ export class PostComponent {
 
   ngOnDestroy() {
     this.routeDataSubscription.unsubscribe();
+    this.subMenuPathValueChangeSusbsription?.unsubscribe();
   }
 }

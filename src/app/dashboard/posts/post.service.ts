@@ -21,7 +21,7 @@ export class PostService {
         return combineLatest([this.menus$, this.posts$]).pipe(
             map(([menus, posts]) => {
                 return menus
-                  .map((menu: Menu) => posts.filter((post: Post) => menu.id === post.menuPath))
+                  .map((menu: Menu) => posts.filter((post: Post) => menu.path === post.menuPath))
                   .filter((menuGroup: Post[]) => menuGroup.length > 0)
             })
         )

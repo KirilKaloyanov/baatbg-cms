@@ -11,16 +11,18 @@
           {{ !saveButtonDisabled ? "Save" : "Wait..." }}
         </button>
       </div>
+      <div></div>
+
+      <mat-form-field>
+        <mat-label for="position">Position</mat-label>
+        <input matInput type="number" id="position" formControlName="position" />
+        <mat-error *ngIf="postForm.get('position')?.hasError('required')">
+          You must enter a value</mat-error>
+      </mat-form-field>
 
       <mat-form-field>
         <mat-label for="post-id">ID</mat-label>
         <input matInput type="text" id="post-id" formControlName="id" />
-        <mat-error *ngIf="postForm.get('id')?.hasError('required')"
-          >You must enter a value</mat-error
-        >
-        <mat-error *ngIf="postForm.get('id')?.hasError('pattern')">
-          ID can only contain lowercase letters and dashes (-)!
-        </mat-error>
       </mat-form-field>
 
       <mat-form-field>

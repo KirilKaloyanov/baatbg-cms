@@ -4,4 +4,5 @@ export interface FileItem {
   isFolder: boolean;
   expanded: boolean;
   children?: FileItem[];
+  updated?: string;
 }

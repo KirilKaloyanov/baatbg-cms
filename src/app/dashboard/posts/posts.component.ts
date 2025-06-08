@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 
-import { Observable, tap } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
 
 import { Post } from './post.model';
 import { PostService } from './post.service';
@@ -29,7 +29,12 @@ export class PostsComponent {
   constructor(private postService: PostService, private router: Router) {}
 
   ngOnInit() {
-    this.groupedPosts$ = this.postService.getPostsGroupByMenuId(); //.pipe(tap((value) => console.log(value)))
+    this.groupedPosts$ = this.postService.getPostsGroupByMenuId().pipe(
+      map(items => {
+        items.forEach(subitem => subitem.sort((a, b) => a.position - b.position))
+        return items;
+      })
+    ); 
   }
   addNewItem() {
     this.router.navigate(['/dashboard/posts/create']);
