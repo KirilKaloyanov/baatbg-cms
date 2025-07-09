@@ -96,23 +96,23 @@
 
     <div class="menu-form-button-group">
       <label for="img">Image: </label>
-      <span *ngIf="!uploadedImage && !fileForUpload">No image, yet...</span>
+      <span *ngIf="!uploadedImageURL && !fileForUpload">No image, yet...</span>
       <img
-        [src]="uploadedImage"
-        *ngIf="uploadedImage"
+        [src]="uploadedImageURL"
+        *ngIf="uploadedImageURL"
         alt="member-logo"
         style="width: 70px"
       />
       <button
         mat-stroked-button
-        *ngIf="uploadedImage"
+        *ngIf="uploadedImageURL"
         (click)="onFileRemove($event)"
       >
         <mat-icon>delete</mat-icon>Remove
       </button>
       <button
         mat-stroked-button
-        *ngIf="!uploadedImage && !fileForUpload"
+        *ngIf="!uploadedImageURL && !fileForUpload"
         (click)="fileInput.click()"
         type="button"
       >

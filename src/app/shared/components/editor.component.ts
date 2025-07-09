@@ -18,6 +18,7 @@ import { from, map, of, switchMap, throwError } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ImageModal } from './modals/image-modal.component';
 import { ToasterService } from '@shared/services/toaster.service';
+import { ImageService, ImageUrl } from '@shared/services/image.service';
 
 @Component({
   selector: 'text-editor',
@@ -34,10 +35,10 @@ export class TextEditorComponent
   implements AfterViewInit, ControlValueAccessor
 {
   @Input() elementId: string = 'editor';
+  @Input() postId!: any;
 
   constructor(
-    private dbService: DbService,
-    private storage: StorageService,
+    private imageService: ImageService,
     private toaster: ToasterService
   ) {}
 
@@ -49,8 +50,6 @@ export class TextEditorComponent
 
   private onChange = (value: string) => {};
   private onTouched = () => {};
-
-  private dialog = inject(MatDialog);
 
   private isDisabled: boolean = false;
 
@@ -85,7 +84,7 @@ export class TextEditorComponent
           ],
         ],
         imageDropAndPaste: {
-          handler: this.uploadImage.bind(this),
+          handler: this.getEmbeddedImage.bind(this),
         },
       },
       theme: 'snow',
@@ -104,6 +103,7 @@ export class TextEditorComponent
     const tools = this.quill.getModule('toolbar') as Toolbar;
 
     tools.addHandler('image', (clicked) => {
+      console.log(clicked)
       if (clicked) {
         const container = document.getElementById(
           this.elementId
@@ -117,26 +117,7 @@ export class TextEditorComponent
           fileInput.style.display = 'none';
           fileInput.setAttribute('accept', 'image/png, image/gif, image/jpeg');
           fileInput.classList.add('ql-image');
-          fileInput.addEventListener('change', (e: any) => {
-            if (e.target.files.length > 0) {
-              const file = e.target.files[0] as File;
-              const fileType = file.type;
-              const reader = new FileReader();
-
-              reader.onload = (e) => {
-                const dataUrl = e.target?.result;
-                if (typeof dataUrl == 'string') {
-                  this.uploadImage(
-                    dataUrl,
-                    fileType,
-                    new ImageData(dataUrl, fileType, file.name)
-                  );
-                  if (fileInput) fileInput.value = '';
-                }
-              };
-              reader.readAsDataURL(file);
-            }
-          });
+          fileInput.addEventListener('change', this.getEmbeddedImage.bind(this));
           container.appendChild(fileInput);
         }
         fileInput.click();
@@ -186,67 +167,31 @@ export class TextEditorComponent
     }
   }
 
-  uploadImage(dataUrl: string, type: string, imageData: ImageData) {
-    this.dialog
-      .open(ImageModal, {
-        data: { dataUrl, type },
-        width: '100%',
-        height: '100dvh',
-      })
-      .afterClosed()
-      .pipe(
-        switchMap((userInput) => {
-          if (!userInput)
-            return throwError(() => new Error('Operation cancelled'));
+  insertImage({ url, alt } : ImageUrl): void {
+    let index = (this.quill.getSelection(true) || {}).index;
+    if (index == undefined || index < 0) index = this.quill.getLength();
+    this.quill.insertEmbed(index, 'image', {
+      src: url,
+      alt,
+    });
+  }
 
-          if (!userInput.alt)
-            return throwError(() => new Error('Alt text was not provided'));
-          return from(
-            imageData.minify({
-              maxHeight: userInput.size,
-              maxWidth: userInput.size,
-              quality: 0.7,
-            })
-          ).pipe(map((miniImage) => ({ miniImage, userInput })));
-        }),
-        switchMap((input: any) => {
-          const miniImage: any = input.miniImage;
-          let filePath = input.userInput.path;
-          const fileToUpload = miniImage.toFile();
+  getEmbeddedImage(e: any) {
+    if (e.target.files.length > 0) {
+      const file: File = e.target.files[0];
+      let targetFolder: string = 'posts/';
 
-          if (!fileToUpload) {
-            return throwError(() => new Error('File creation failed'));
-          }
+      if (this.postId?.menuPath && this.postId?.subMenuPath) {
+        targetFolder += `${this.postId.menuPath}/${this.postId.subMenuPath}/`
+      }
 
-          filePath = filePath ? filePath + '/' : '';
-          return this.storage
-            .uploadFile(fileToUpload, 'posts/' + filePath)
-            .pipe(
-              switchMap((value) => {
-                if (value !== 'uploaded') return of(null);
-                return this.dbService
-                  .getFileUrl('posts/' + filePath + fileToUpload.name)
-                  .pipe(map((src) => ({ src, alt: input.userInput.alt })));
-              })
-            );
-        })
-      )
-      .subscribe({
-        next: (result: any) => {
-          if (!result) return;
-          const { src, alt } = result;
-          let index = (this.quill.getSelection() || {}).index;
-          if (index == undefined || index < 0) index = this.quill.getLength();
-          this.quill.insertEmbed(index, 'image', {
-            src,
-            alt,
-          });
-        },
+      this.imageService.uploadEmbeddedImage(file, targetFolder).subscribe({
+        next: this.insertImage.bind(this),
         error: (err) => {
-          console.log(err);
-          this.toaster.showError('Error uploading document: ' + err.message);
+          this.toaster.showError('Error while embedding image: ' + err.message);
         },
       });
+    }
   }
 
   // ControlValueAccessor methods

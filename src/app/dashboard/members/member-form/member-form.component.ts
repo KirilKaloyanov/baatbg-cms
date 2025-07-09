@@ -16,17 +16,21 @@ import { MatIconModule } from '@angular/material/icon';
 
 import {
   combineLatest,
+  filter,
   map,
   Observable,
   of,
   Subscription,
   switchMap,
+  take,
+  throwError,
 } from 'rxjs';
 
 import { Member, MemberType } from '../member.model';
 import { DbService } from '@shared/services/db.service';
 import { StorageService } from '@shared/services/storage.service';
 import { ToasterService } from '@shared/services/toaster.service';
+import { ImageService, ImageUrl } from '@shared/services/image.service';
 
 @Component({
   selector: 'member-form',
@@ -46,16 +50,16 @@ export class MemberFormComponent {
   memberTypes!: MemberType[];
   memberForm!: FormGroup;
   fileForUpload!: File;
-  uploadedImage!: string | null;
-  uploadedImageName!: string | null;
+  uploadedImageURL!: string | null;
+  // uploadedImageName!: string | null;
   saveButtonDisabled: boolean = false;
   isCreate!: boolean;
 
   routeDataSubscription!: Subscription;
 
   constructor(
+    private imageService: ImageService,
     private dbService: DbService,
-    private storage: StorageService,
     private toaster: ToasterService,
     private route: ActivatedRoute,
     private router: Router
@@ -83,18 +87,7 @@ export class MemberFormComponent {
 
     this.member$
       .pipe(
-        switchMap((dbMember) => {
-          const imgFileName = dbMember?.img || null;
-          this.uploadedImageName = imgFileName;
-          const imageUrl$ = imgFileName
-            ? this.dbService.getFileUrl(
-                `members/profiles/${dbMember?.id}/${imgFileName}`
-              )
-            : of(null);
-          return combineLatest([of(dbMember), imageUrl$]);
-        }),
-        map(([dbMember, imageUrl]) => {
-          if (imageUrl) this.uploadedImage = imageUrl;
+        map((dbMember) => {
           if (dbMember) {
             const uiMember = {
               id: dbMember.id,
@@ -110,6 +103,7 @@ export class MemberFormComponent {
               email: dbMember.email || '',
             };
             this.memberForm.patchValue(uiMember);
+            this.uploadedImageURL = dbMember.img ?? null;
           }
         })
       )
@@ -141,19 +135,32 @@ export class MemberFormComponent {
   }
 
   onFileSelect(e: any) {
-    this.fileForUpload = e.target.files[0];
+    const selectedFile = e.target.files[0];
+
+    if (selectedFile && selectedFile.size > 1024 * 1000 * 2) {
+      this.saveButtonDisabled = false;
+      return this.toaster.showError('Choose file smaller than 2MB');
+    }
+
+    this.imageService.getPreparedImageFile(selectedFile).subscribe({
+      next: ({ fileToUpload }) => {
+        this.fileForUpload = fileToUpload;
+      },
+      error: (err) => this.toaster.showError(err.message),
+    });
   }
 
   onFileRemove(e: any) {
     e.preventDefault();
-    this.uploadedImage = '';
-    this.uploadedImageName = '';
+    this.uploadedImageURL = '';
   }
 
   saveMember() {
     if (this.memberForm.invalid) return;
+
     this.saveButtonDisabled = true;
-    const id = this.memberForm.get('id')?.value;
+    const memberId = this.memberForm.get('id')?.value;
+
     const payload: any = {
       typeId: this.memberForm.get('memberType')?.value,
       name: {
@@ -171,29 +178,35 @@ export class MemberFormComponent {
       website: this.memberForm.get('website')?.value,
       phone: this.memberForm.get('phone')?.value,
       email: this.memberForm.get('email')?.value,
-      img: this.uploadedImage,
+      img: this.uploadedImageURL ?? '',
     };
-    if (this.uploadedImage) payload.img = this.uploadedImageName;
-    else if (this.fileForUpload) payload.img = this.fileForUpload.name;
-    else payload.img = '';
-    ////////////////////////
-    ///TODO  check file size using custom validator on the fileForUpload
-    ////////////////////////
-    this.dbService.saveDocument('members', id, payload).subscribe({
-      complete: () => {
-        this.toaster.showSuccess('Successfully saved member');
-        if (this.fileForUpload) {
-          this.storage
-            .uploadFile(this.fileForUpload, `members/profiles/${id}/`)
-            .subscribe();
-        }
-        this.returnToParent();
-      },
-      error: (error) => {
-        this.toaster.showError('Error saving member', error);
-        this.saveButtonDisabled = false;
-      },
-    });
+
+    const image$: Observable<ImageUrl | null> = this.fileForUpload
+      ? this.imageService.uploadImage(
+          this.fileForUpload,
+          `members/profiles/${memberId}/`
+        )
+      : of(null);
+
+    image$
+      .pipe(
+        switchMap((value) => {
+          if (value) {
+            payload.img = value.url;
+          }
+          return this.dbService.saveDocument('members', memberId, payload);
+        })
+      )
+      .subscribe({
+        complete: () => {
+          this.toaster.showSuccess('Successfully saved member');
+          this.returnToParent();
+        },
+        error: (error) => {
+          this.toaster.showError('Error saving member', error);
+          this.saveButtonDisabled = false;
+        },
+      });
   }
 
   returnToParent() {

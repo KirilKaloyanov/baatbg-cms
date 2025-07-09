@@ -94,7 +94,7 @@ export class DbService {
       const docRef = doc(this.firestore, `${collectionName}/${docName}`);
       return from(getDoc(docRef)).pipe(
         switchMap((docSnap) => {
-          console.log(docSnap);
+          console.log('Inside dbService: getIfDocument()', docSnap);
           if (!docSnap.exists())
             return throwError(() => 'Document not found in the database');
           return of({ id: docSnap.id, ...docSnap.data() }) as Observable<T>;
@@ -116,7 +116,7 @@ export class DbService {
   saveDocument(collectionName: string, id: string, payload: {}) {
     return this.runInFirebaseContext(() => {
       if (!id) return throwError(() => ({ message: 'Invalid ID' }));
-      console.log(id);
+      // console.log(id);
       const docRef = doc(this.firestore, `${collectionName}/${id}`);
       return from(setDoc(docRef, payload));
     });

@@ -45,20 +45,31 @@ export class ImageModal {
   @ViewChild('imageRef') imageElement!: ElementRef<HTMLImageElement>;
   dialogRef = inject(MatDialogRef<ImageModal>);
   data = inject(MAT_DIALOG_DATA);
+
   imageSize = model(600);
-  folderPath = model('');
   altText = model('');
+
+  folderPath = model('');
+  finalPath = computed(() => {
+    return this.folderPath() === '' ? this.folderPath() : this.folderPath() + "/"
+  })
+
+  isAltTextMissing = computed(() => {
+    return this.altText() == '' && !this.data.onlySizeOption
+  })
 
   imageStyle = computed(() => ({
     'width': `${this.imageSize()}px`
   }))
 
   onConfirm() {
-    if (!this.altText()) return;
+    if (this.isAltTextMissing() ) {
+      return null;
+    };
 
     return {
       size: this.imageSize(),
-      path: this.folderPath(),
+      path: this.finalPath(),
       alt: this.altText(),
     };
   }

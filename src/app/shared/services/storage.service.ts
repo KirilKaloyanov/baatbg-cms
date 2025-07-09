@@ -23,6 +23,7 @@ export class StorageService {
           const progress = Math.floor(
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100
           );
+          console.log('progress#',progress)
           this.loader.showProgress(progress);
         }
         if (value == 'uploaded') {

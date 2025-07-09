@@ -13,18 +13,25 @@
   </div>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <mat-form-field>
+  <mat-form-field *ngIf="!data.onlySizeOption">
     <mat-label>Alternative text (Required)</mat-label>
     <input matInput type="text" [(ngModel)]="altText" required />
   </mat-form-field>
-  <mat-form-field>
+  <mat-form-field  *ngIf="!data.onlySizeOption">
     <mat-label>Enter folder path (Optional)</mat-label>
     <input matInput type="text" [(ngModel)]="folderPath" />
     <mat-hint
       >Enter folder name to store the image, ex. leonardo-project or
-      folder/subfolder/leonardo-project. Do not start with posts/ as it is added automatically.
+      folder/subfolder/leonardo-project. Do not start with posts/ as it is added
+      automatically.
     </mat-hint>
   </mat-form-field>
   <button mat-button (click)="onNoClick()">Cancel</button>
-  <button mat-button [mat-dialog-close]="onConfirm()">OK</button>
+  <button
+    mat-button
+    [mat-dialog-close]="onConfirm()"
+    [disabled]="isAltTextMissing()"
+  >
+    OK
+  </button>
 </mat-dialog-actions>
